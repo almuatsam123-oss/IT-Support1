@@ -1689,6 +1689,18 @@ function renderDashboard() {
       <td><span class="warning-badge">${t("Low Stock")}</span></td>
     </tr>
   `).join("") || `<tr><td colspan="4">${t("No low stock alerts")}</td></tr>`;
+
+  const recentActivityTable = $("#dashboardRecentActivity");
+  if (recentActivityTable) {
+    recentActivityTable.innerHTML = auditLog.slice(0, 5).map((record) => `
+      <tr>
+        <td>${formatDateTime(record.timestamp)}</td>
+        <td>${escapeHtml(record.user || t("Admin"))}</td>
+        <td><span class="status-pill status-reserved">${escapeHtml(t(record.actionType || "Update record"))}</span></td>
+        <td>${escapeHtml(record.details || t("No notes"))}</td>
+      </tr>
+    `).join("") || `<tr><td colspan="4">${t("No audit records yet")}</td></tr>`;
+  }
 }
 
 function saveAssetFromForm(event) {
