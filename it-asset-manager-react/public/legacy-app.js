@@ -2512,9 +2512,16 @@ function getLoggedInUser() {
   }
 }
 
+function getAdminUser() {
+  const admin = (Array.isArray(users) ? users : [])
+    .map(migrateUser)
+    .find((user) => user.username.toLowerCase() === defaultAdminUser.username.toLowerCase() && user.role === "Admin");
+  return admin || defaultAdminUser;
+}
+
 function isLoggedIn() {
   const session = getLoggedInUser();
-  return Boolean(session && session.username === defaultAdminUser.username && session.role === "Admin");
+  return Boolean(session && session.username?.toLowerCase() === defaultAdminUser.username.toLowerCase() && session.role === "Admin");
 }
 
 function initializeAuth() {
@@ -2558,8 +2565,15 @@ function handleLogin(event) {
   event.preventDefault();
   const username = $("#loginUsername").value.trim();
   const password = $("#loginPassword").value;
-  if (username === defaultAdminUser.username && password === defaultAdminUser.password) {
-    const session = { username: "Admin", role: "Admin", loginAt: new Date().toISOString() };
+  const adminUser = getAdminUser();
+  if (username.toLowerCase() === adminUser.username.toLowerCase() && password === adminUser.password) {
+    const session = {
+      id: adminUser.id,
+      username: adminUser.username,
+      fullName: adminUser.fullName,
+      role: adminUser.role,
+      loginAt: new Date().toISOString()
+    };
     saveStoredValue(STORAGE_KEYS.session, session);
     $("#loginError").classList.add("hidden");
     $("#loginForm").reset();
