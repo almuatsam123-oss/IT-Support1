@@ -10,6 +10,7 @@ import AuditLogPage from "./pages/AuditLogPage.jsx";
 import SubmitRequestPage from "./pages/SubmitRequestPage.jsx";
 import TrackRequestPage from "./pages/TrackRequestPage.jsx";
 import ServiceDeskPage from "./pages/ServiceDeskPage.jsx";
+import ITSupportPage from "./pages/ITSupportPage.jsx";
 import UsersPage from "./pages/UsersPage.jsx";
 import ReportsPage from "./pages/ReportsPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
@@ -30,6 +31,7 @@ export default function DashboardShell() {
         <SubmitRequestPage />
         <TrackRequestPage />
         <ServiceDeskPage />
+        <ITSupportPage />
         <UsersPage />
         <ReportsPage />
         <SettingsPage />

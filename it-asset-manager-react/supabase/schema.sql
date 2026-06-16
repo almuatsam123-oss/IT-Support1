@@ -44,6 +44,13 @@ create table if not exists public.requests (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.it_support_tickets (
+  id text primary key,
+  payload jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create table if not exists public.settings (
   key text primary key,
   value jsonb,
@@ -100,6 +107,10 @@ drop trigger if exists requests_set_updated_at on public.requests;
 create trigger requests_set_updated_at before update on public.requests
 for each row execute function public.set_updated_at();
 
+drop trigger if exists it_support_tickets_set_updated_at on public.it_support_tickets;
+create trigger it_support_tickets_set_updated_at before update on public.it_support_tickets
+for each row execute function public.set_updated_at();
+
 drop trigger if exists settings_set_updated_at on public.settings;
 create trigger settings_set_updated_at before update on public.settings
 for each row execute function public.set_updated_at();
@@ -125,6 +136,7 @@ alter table public.assets enable row level security;
 alter table public.handovers enable row level security;
 alter table public.maintenance enable row level security;
 alter table public.requests enable row level security;
+alter table public.it_support_tickets enable row level security;
 alter table public.settings enable row level security;
 alter table public.stock_items enable row level security;
 alter table public.suppliers enable row level security;
@@ -142,6 +154,7 @@ begin
     'handovers',
     'maintenance',
     'requests',
+    'it_support_tickets',
     'settings',
     'stock_items',
     'suppliers',

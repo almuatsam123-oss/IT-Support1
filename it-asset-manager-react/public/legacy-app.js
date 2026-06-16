@@ -8,16 +8,21 @@ const STORAGE_KEYS = {
   handovers: "itAssetManager.handovers",
   language: "itAssetManager.language",
   requests: "itAssetManager.requests",
+  itSupportTickets: "itAssetManager.itSupportTickets",
   requestDraft: "itAssetManager.requestDraft",
   users: "itAssetManager.users",
   session: "amjaad_logged_in_user",
-  ticketCounter: "itAssetManager.ticketCounter"
+  ticketCounter: "itAssetManager.ticketCounter",
+  itSupportTicketCounter: "itAssetManager.itSupportTicketCounter"
 };
 
 const currentUser = "Al Motasim";
 const stockCategories = ["RAM", "SSD", "HDD", "Keyboard", "Mouse", "Laptop Bag", "Charger", "HDMI Cable", "DisplayPort Cable", "LAN Cable", "USB Adapter", "Docking Station", "Printer Toner", "Other"];
 const serviceCategories = ["Hardware Issue", "Software Issue", "Printer Issue", "Network Issue", "Email Issue", "Laptop Request", "Desktop Request", "RAM Upgrade", "SSD Upgrade", "Software Installation", "Software License", "General IT Support", "Other"];
 const ticketStatuses = ["New", "Assigned", "In Progress", "Waiting for User", "Waiting for Parts", "Resolved", "Closed"];
+const itSupportCategories = ["Hardware", "Software", "Network", "Email", "Printer", "Access Request", "Other"];
+const itSupportPriorities = ["Low", "Medium", "High", "Critical"];
+const itSupportStatuses = ["Open", "In Progress", "Pending", "Resolved", "Closed"];
 const companyList = ["AMJAAD GROUP", "MASHEED", "RAZEEN", "LIOWAN", "AMJAAD DEVELOPMENT"];
 const LOCALE_FILES = { en: "locales/en.json", ar: "locales/ar.json" };
 const translations = {
@@ -929,6 +934,7 @@ const PAGE_PATHS = {
   maintenancePage: "/maintenance",
   suppliersPage: "/suppliers",
   serviceDeskPage: "/requests",
+  itSupportPage: "/it-support",
   usersPage: "/users",
   reportsPage: "/reports",
   settingsPage: "/settings",
@@ -950,6 +956,8 @@ Object.assign(PATH_PAGES, {
   "/service-desk": "serviceDeskPage",
   "/tickets": "serviceDeskPage",
   "/requests": "serviceDeskPage",
+  "/it-support": "itSupportPage",
+  "/itSupportPage": "itSupportPage",
   "/usersPage": "usersPage",
   "/reportsPage": "reportsPage",
   "/settingsPage": "settingsPage",
@@ -965,6 +973,7 @@ const stockForm = $("#stockForm");
 const maintenanceForm = $("#maintenanceForm");
 const supplierForm = $("#supplierForm");
 const issueForm = $("#issueForm");
+const itSupportTicketForm = $("#itSupportTicketForm");
 
 let assets = storage.load(STORAGE_KEYS.assets, sampleAssets).map(migrateAsset);
 let handovers = storage.load(STORAGE_KEYS.handovers, []).map(migrateHandover);
@@ -974,12 +983,14 @@ let issueHistory = storage.load(STORAGE_KEYS.issues, []);
 let suppliers = storage.load(STORAGE_KEYS.suppliers, []);
 let auditLog = storage.load(STORAGE_KEYS.audit, []);
 let requests = storage.load(STORAGE_KEYS.requests, []);
+let itSupportTickets = storage.load(STORAGE_KEYS.itSupportTickets, []).map(migrateItSupportTicket);
 let users = storage.load(STORAGE_KEYS.users, getDefaultUsers()).map(migrateUser);
 let editingId = null;
 let editingHandoverId = null;
 let editingStockId = null;
 let editingSupplierId = null;
 let editingUserId = null;
+let editingItSupportTicketId = null;
 let activePage = "dashboardPage";
 let currentQrAsset = null;
 let currentLanguage = loadStoredValue(STORAGE_KEYS.language, "ar") || "ar";
@@ -1108,6 +1119,15 @@ $("#ticketSiteFilter").addEventListener("input", renderRequests);
 $("#ticketPriorityFilter").addEventListener("change", renderRequests);
 $("#ticketCategoryFilter").addEventListener("change", renderRequests);
 $("#ticketTable").addEventListener("click", handleRequestAction);
+itSupportTicketForm.addEventListener("submit", saveItSupportTicketFromForm);
+itSupportTicketForm.addEventListener("reset", () => setTimeout(prepareItSupportTicketDefaults, 0));
+$("#cancelItSupportTicketEditBtn").addEventListener("click", () => cancelForm(itSupportTicketForm, resetItSupportTicketForm));
+$("#itSupportSearchInput").addEventListener("input", renderItSupportTickets);
+$("#itSupportStatusFilter").addEventListener("change", renderItSupportTickets);
+$("#itSupportCategoryFilter").addEventListener("change", renderItSupportTickets);
+$("#itSupportPriorityFilter").addEventListener("change", renderItSupportTickets);
+$("#itSupportTicketTable").addEventListener("click", handleItSupportTicketAction);
+$("#exportItSupportTicketsBtn").addEventListener("click", exportItSupportTicketsCsv);
 $("#userForm").addEventListener("submit", saveUserFromForm);
 $("#userTable").addEventListener("click", handleUserAction);
 $("#resetPasswordForm").addEventListener("submit", savePasswordReset);
@@ -1345,6 +1365,7 @@ function applyReferenceSubtitles() {
     maintenancePage: "Maintenance",
     suppliersPage: "Suppliers",
     serviceDeskPage: "Service Desk",
+    itSupportPage: "IT Support",
     usersPage: "Users",
     reportsPage: "Reports",
     settingsPage: "Settings"
@@ -1431,6 +1452,22 @@ function migrateUser(user) {
   return { company: "AMJAAD GROUP", ...user, company: normalizeCompany(user.company || "AMJAAD GROUP") };
 }
 
+function migrateItSupportTicket(ticket) {
+  return {
+    id: createId(),
+    ticketId: "",
+    employeeName: "",
+    department: "",
+    category: "Other",
+    priority: "Medium",
+    description: "",
+    createdDate: new Date().toISOString().slice(0, 10),
+    status: "Open",
+    lastUpdate: new Date().toISOString(),
+    ...ticket
+  };
+}
+
 function normalizeCompany(company) {
   const value = String(company || "").trim().toLowerCase();
   const aliases = {
@@ -1468,6 +1505,10 @@ function setupCategoryOptions() {
   $("#requestCategory").innerHTML = `<option value="">${t("Choose category")}</option>${serviceCategories.map((category) => `<option value="${category}">${t(category)}</option>`).join("")}`;
   $("#ticketStatusFilter").innerHTML = `<option value="All">${t("All statuses")}</option>${ticketStatuses.map((status) => `<option value="${status}">${t(status)}</option>`).join("")}`;
   $("#ticketCategoryFilter").innerHTML = `<option value="All">${t("All categories")}</option>${serviceCategories.map((category) => `<option value="${category}">${t(category)}</option>`).join("")}`;
+  $("#itSupportCategory").innerHTML = `<option value="">${t("Choose category")}</option>${itSupportCategories.map((category) => `<option value="${category}">${t(category)}</option>`).join("")}`;
+  $("#itSupportStatusFilter").innerHTML = `<option value="All">${t("All statuses")}</option>${itSupportStatuses.map((status) => `<option value="${status}">${t(status)}</option>`).join("")}`;
+  $("#itSupportCategoryFilter").innerHTML = `<option value="All">${t("All categories")}</option>${itSupportCategories.map((category) => `<option value="${category}">${t(category)}</option>`).join("")}`;
+  $("#itSupportPriorityFilter").innerHTML = `<option value="All">${t("All priorities")}</option>${itSupportPriorities.map((priority) => `<option value="${priority}">${t(priority)}</option>`).join("")}`;
   populateEmployeeOptions();
 }
 
@@ -1496,6 +1537,7 @@ function setDefaultDates() {
   $("#maintenanceDate").value = today;
   $("#issueDate").value = today;
   if ($("#handoverDate")) $("#handoverDate").value = today;
+  resetItSupportTicketForm();
 }
 
 function showPage(pageId, options = {}) {
@@ -1534,6 +1576,7 @@ function showPage(pageId, options = {}) {
     submitRequestPage: "Submit and manage IT service requests.",
     trackRequestPage: "Track request status and details.",
     serviceDeskPage: "IT Helpdesk & Service Desk ticket management.",
+    itSupportPage: "IT Support Tickets dashboard and ticket creation.",
     usersPage: "Manage users and password resets.",
     auditLogPage: "Audit trail for important IT operations.",
     reportsPage: "Corporate exports for asset and inventory reporting.",
@@ -1553,6 +1596,7 @@ function renderAll() {
   renderIssueHistory();
   renderSuppliers();
   renderRequests();
+  renderItSupportTickets();
   renderUsers();
   renderAuditLog();
   renderDashboard();
@@ -2426,6 +2470,132 @@ function generateRequestNumber() {
   return `REQ-${year}-${String(currentCounter).padStart(5, "0")}`;
 }
 
+function generateItSupportTicketId() {
+  const year = new Date().getFullYear();
+  const currentCounter = readNumber(loadStoredValue(STORAGE_KEYS.itSupportTicketCounter, 0)) + 1;
+  saveStoredValue(STORAGE_KEYS.itSupportTicketCounter, currentCounter);
+  return `ITS-${year}-${String(currentCounter).padStart(5, "0")}`;
+}
+
+function previewItSupportTicketId() {
+  const year = new Date().getFullYear();
+  const currentCounter = readNumber(loadStoredValue(STORAGE_KEYS.itSupportTicketCounter, 0)) + 1;
+  return `ITS-${year}-${String(currentCounter).padStart(5, "0")}`;
+}
+
+function saveItSupportTicketFromForm(event) {
+  event.preventDefault();
+  const ticket = {
+    id: editingItSupportTicketId || createId(),
+    ticketId: editingItSupportTicketId ? $("#itSupportTicketId").value : generateItSupportTicketId(),
+    employeeName: $("#itSupportEmployeeName").value.trim(),
+    department: $("#itSupportDepartment").value.trim(),
+    category: $("#itSupportCategory").value || "Other",
+    priority: $("#itSupportPriority").value || "Medium",
+    description: $("#itSupportDescription").value.trim(),
+    createdDate: $("#itSupportCreatedDate").value || new Date().toISOString().slice(0, 10),
+    status: $("#itSupportStatus").value || "Open",
+    lastUpdate: new Date().toISOString()
+  };
+
+  if (editingItSupportTicketId) {
+    itSupportTickets = itSupportTickets.map((item) => item.id === editingItSupportTicketId ? ticket : item);
+    addAudit("Update record", `Updated IT support ticket ${ticket.ticketId}`);
+  } else {
+    itSupportTickets.unshift(ticket);
+    addAudit("Ticket Created", `Created IT support ticket ${ticket.ticketId}`);
+    addAudit("Save new record", `Saved IT support ticket ${ticket.ticketId}`);
+  }
+
+  saveItSupportTickets();
+  postSave(itSupportTicketForm, Boolean(editingItSupportTicketId), resetItSupportTicketForm);
+  renderAll();
+}
+
+function renderItSupportTickets() {
+  const visibleTickets = getVisibleItSupportTickets();
+  const openCount = itSupportTickets.filter((ticket) => ticket.status === "Open").length;
+  const progressCount = itSupportTickets.filter((ticket) => ticket.status === "In Progress").length;
+  const closedCount = itSupportTickets.filter((ticket) => ticket.status === "Closed").length;
+
+  $("#itSupportTotalTickets").textContent = itSupportTickets.length;
+  $("#itSupportOpenTickets").textContent = openCount;
+  $("#itSupportProgressTickets").textContent = progressCount;
+  $("#itSupportClosedTickets").textContent = closedCount;
+  $("#itSupportTicketTable").innerHTML = visibleTickets.map((ticket) => `
+    <tr>
+      <td><span class="asset-name">${escapeHtml(ticket.ticketId)}<small>${formatDate(ticket.createdDate)}</small></span></td>
+      <td>${escapeHtml(ticket.employeeName)}</td>
+      <td>${escapeHtml(ticket.department || t("Not set"))}</td>
+      <td>${escapeHtml(t(ticket.category || "Other"))}</td>
+      <td><span class="status-pill ${["High", "Critical"].includes(ticket.priority) ? "status-maintenance" : "status-available"}">${escapeHtml(t(ticket.priority))}</span></td>
+      <td><span class="status-pill status-reserved">${escapeHtml(t(ticket.status))}</span></td>
+      <td>${formatDate(ticket.createdDate)}</td>
+      <td>${escapeHtml(ticket.description || t("No notes"))}</td>
+      <td><div class="actions">
+        <button class="action-btn" type="button" data-action="edit" data-id="${ticket.id}">${t("Edit")}</button>
+        <button class="action-btn" type="button" data-action="status" data-id="${ticket.id}">${t("Change Status")}</button>
+        <button class="action-btn delete" type="button" data-action="delete" data-id="${ticket.id}">${t("Delete")}</button>
+      </div></td>
+    </tr>
+  `).join("");
+  $("#itSupportTicketEmptyState").classList.toggle("hidden", visibleTickets.length > 0);
+}
+
+function handleItSupportTicketAction(event) {
+  const button = event.target.closest("button[data-action]");
+  if (!button) return;
+  const ticket = itSupportTickets.find((item) => item.id === button.dataset.id);
+  if (!ticket) return;
+
+  if (button.dataset.action === "edit") {
+    editingItSupportTicketId = ticket.id;
+    $("#itSupportTicketId").value = ticket.ticketId;
+    $("#itSupportEmployeeName").value = ticket.employeeName;
+    $("#itSupportDepartment").value = ticket.department;
+    $("#itSupportCategory").value = ticket.category;
+    $("#itSupportPriority").value = ticket.priority;
+    $("#itSupportStatus").value = ticket.status;
+    $("#itSupportDescription").value = ticket.description;
+    $("#itSupportCreatedDate").value = ticket.createdDate;
+    $("#itSupportSubmitBtn").textContent = t("Save changes");
+    $("#cancelItSupportTicketEditBtn").classList.remove("hidden");
+  }
+
+  if (button.dataset.action === "status") {
+    const status = prompt(`${t("Change Status")}: ${itSupportStatuses.join(", ")}`, ticket.status);
+    if (!status || !itSupportStatuses.includes(status)) return;
+    ticket.status = status;
+    ticket.lastUpdate = new Date().toISOString();
+    addAudit("Status Changed", `Changed ${ticket.ticketId} to ${status}`);
+    saveItSupportTickets();
+    renderAll();
+  }
+
+  if (button.dataset.action === "delete" && confirmDelete()) {
+    itSupportTickets = itSupportTickets.filter((item) => item.id !== ticket.id);
+    addAudit("Delete confirmed", `Deleted IT support ticket ${ticket.ticketId}`);
+    saveItSupportTickets();
+    renderAll();
+  }
+}
+
+function resetItSupportTicketForm() {
+  if (!itSupportTicketForm) return;
+  editingItSupportTicketId = null;
+  itSupportTicketForm.reset();
+  prepareItSupportTicketDefaults();
+}
+
+function prepareItSupportTicketDefaults() {
+  $("#itSupportTicketId").value = previewItSupportTicketId();
+  $("#itSupportCreatedDate").value = new Date().toISOString().slice(0, 10);
+  $("#itSupportPriority").value = "Medium";
+  $("#itSupportStatus").value = "Open";
+  $("#itSupportSubmitBtn").textContent = t("Create Ticket");
+  $("#cancelItSupportTicketEditBtn").classList.add("hidden");
+}
+
 function saveUserFromForm(event) {
   event.preventDefault();
   const user = {
@@ -2827,11 +2997,26 @@ function getVisibleTickets() {
   });
 }
 
+function getVisibleItSupportTickets() {
+  const query = $("#itSupportSearchInput")?.value.trim().toLowerCase() || "";
+  const status = $("#itSupportStatusFilter")?.value || "All";
+  const category = $("#itSupportCategoryFilter")?.value || "All";
+  const priority = $("#itSupportPriorityFilter")?.value || "All";
+  return itSupportTickets.filter((ticket) => {
+    const searchable = [ticket.ticketId, ticket.employeeName, ticket.department, ticket.category, ticket.priority, ticket.status, ticket.description, ticket.createdDate].join(" ").toLowerCase();
+    return searchable.includes(query)
+      && (status === "All" || ticket.status === status)
+      && (category === "All" || ticket.category === category)
+      && (priority === "All" || ticket.priority === priority);
+  });
+}
+
 function exportActiveView() {
   if (activePage === "stockPage") exportStockCsv();
   else if (activePage === "handoverPage") exportAssetsCsv();
   else if (activePage === "maintenancePage") exportMaintenanceCsv();
   else if (activePage === "serviceDeskPage") exportTicketsCsv();
+  else if (activePage === "itSupportPage") exportItSupportTicketsCsv();
   else if (activePage === "issueHistoryPage") exportIssuesCsv();
   else if (activePage === "auditLogPage") exportAuditCsv();
   else exportAssetsCsv();
@@ -2888,6 +3073,23 @@ function exportTicketsCsv() {
   );
 }
 
+function exportItSupportTicketsCsv() {
+  downloadCsv(
+    ["Ticket ID", "Employee Name", "Department", "Category", "Priority", "Status", "Created Date", "Description"],
+    getVisibleItSupportTickets().map((ticket) => [
+      ticket.ticketId,
+      ticket.employeeName,
+      ticket.department,
+      ticket.category,
+      ticket.priority,
+      ticket.status,
+      ticket.createdDate,
+      ticket.description
+    ]),
+    "amjaad-it-support-tickets"
+  );
+}
+
 function downloadCsv(headers, rows, filePrefix) {
   const csv = "\uFEFF" + [headers, ...rows].map((row) => row.map(formatCsvCell).join(",")).join("\r\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
@@ -2910,6 +3112,7 @@ function saveIssues() { storage.save(STORAGE_KEYS.issues, issueHistory); }
 function saveSuppliers() { storage.save(STORAGE_KEYS.suppliers, suppliers); }
 function saveAudit() { storage.save(STORAGE_KEYS.audit, auditLog); }
 function saveRequests() { storage.save(STORAGE_KEYS.requests, requests); }
+function saveItSupportTickets() { storage.save(STORAGE_KEYS.itSupportTickets, itSupportTickets); }
 function saveUsers() {
   users = users.length ? [{ ...defaultAdminUser, ...migrateUser(users[0]), id: "default-admin", username: "Admin", role: "Admin", permissions: [...defaultAdminUser.permissions] }] : getDefaultUsers();
   storage.save(STORAGE_KEYS.users, users);

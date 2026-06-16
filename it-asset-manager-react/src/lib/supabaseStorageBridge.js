@@ -9,6 +9,7 @@ const ARRAY_TABLES = {
   "itAssetManager.auditLog": "audit_logs",
   "itAssetManager.handovers": "handovers",
   "itAssetManager.requests": "requests",
+  "itAssetManager.itSupportTickets": "it_support_tickets",
   "itAssetManager.users": "employees"
 };
 
@@ -16,11 +17,13 @@ const VALUE_SETTINGS = {
   "itAssetManager.language": "language",
   "itAssetManager.requestDraft": "requestDraft",
   "itAssetManager.ticketCounter": "ticketCounter",
+  "itAssetManager.itSupportTicketCounter": "itSupportTicketCounter",
   "amjaad_logged_in_user": "session"
 };
 
 const arrayCache = new Map();
 const valueCache = new Map();
+const OPTIONAL_TABLES = new Set(["it_support_tickets"]);
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -134,7 +137,13 @@ export async function initializeSupabaseStorageBridge() {
   }
 
   for (const [key, table] of Object.entries(ARRAY_TABLES)) {
-    arrayCache.set(key, await fetchArray(table));
+    try {
+      arrayCache.set(key, await fetchArray(table));
+    } catch (error) {
+      if (!OPTIONAL_TABLES.has(table)) throw error;
+      console.error(`Supabase optional table unavailable: ${table}`, error);
+      arrayCache.set(key, []);
+    }
   }
 
   for (const settingKey of Object.values(VALUE_SETTINGS)) {

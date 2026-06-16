@@ -34,6 +34,7 @@ const payloadTables = [
   "handovers",
   "maintenance",
   "requests",
+  "it_support_tickets",
   "stock_items",
   "suppliers",
   "audit_logs",
