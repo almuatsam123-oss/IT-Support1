@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import LoginPage from "./components/LoginPage.jsx";
 import DashboardShell from "./components/DashboardShell.jsx";
 import AppModals from "./components/AppModals.jsx";
+import { initializeSupabaseStorageBridge } from "./lib/supabaseStorageBridge.js";
 
 function loadScript(src, datasetKey) {
   return new Promise((resolve, reject) => {
@@ -41,7 +42,7 @@ function loadLegacyApp() {
     }
 
     try {
-      await loadScript("/storage-service.js", "amjaad-storage-service");
+      await initializeSupabaseStorageBridge();
       await loadScript("/legacy-app.js", "amjaad-legacy-app");
       window.__AMJAAD_LEGACY_APP_LOADED__ = true;
       resolve();

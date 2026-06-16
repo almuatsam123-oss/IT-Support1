@@ -1,3 +1,4095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amjaad Asset & Inventory Management</title>
+  <style>
+:root {
+  color-scheme: light;
+  --bg: #f6f1e8;
+  --panel: #fffdf8;
+  --text: #17202d;
+  --muted: #756f66;
+  --line: #e6dccb;
+  --navy: #111b2d;
+  --charcoal: #24272b;
+  --gold: #b68a35;
+  --gold-dark: #8c6723;
+  --gold-soft: #f5ead5;
+  --danger: #b42318;
+  --danger-soft: #fce8e6;
+  --shadow: 0 22px 55px rgba(30, 25, 18, 0.10);
+  --sidebar-shadow: 20px 0 50px rgba(17, 27, 45, 0.10);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, rgba(255, 253, 248, 0.94), rgba(246, 241, 232, 0.96)),
+    radial-gradient(circle at top right, rgba(182, 138, 53, 0.15), transparent 28rem),
+    var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body.rtl {
+  direction: rtl;
+  text-align: right;
+  font-family: Tahoma, "Segoe UI", Arial, sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+body.rtl input,
+body.rtl select,
+body.rtl textarea {
+  text-align: right;
+}
+
+button {
+  cursor: pointer;
+}
+
+.dashboard-shell {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.login-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+}
+
+.login-card {
+  display: grid;
+  width: min(480px, 100%);
+  gap: 18px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: rgba(255, 253, 248, 0.94);
+  box-shadow: var(--shadow);
+  padding: 28px;
+}
+
+.login-brand {
+  border-bottom-color: var(--line);
+  color: var(--navy);
+}
+
+.login-brand span {
+  color: var(--muted);
+}
+
+.public-links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.form-error {
+  margin: 0;
+  color: var(--danger);
+  font-weight: 800;
+}
+
+.user-profile {
+  display: grid;
+  gap: 2px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 8px 12px;
+}
+
+.user-profile strong {
+  color: var(--navy);
+  font-size: 0.88rem;
+}
+
+.user-profile small {
+  color: var(--muted);
+}
+
+.sidebar-nav button.locked {
+  opacity: 0.55;
+}
+
+.success-panel {
+  border: 1px solid rgba(31, 107, 54, 0.22);
+  border-radius: 18px;
+  background: #eaf7ec;
+  color: #1f6b36;
+  font-weight: 800;
+  line-height: 1.6;
+  padding: 16px;
+}
+
+.notification-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--danger);
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 900;
+  padding: 7px 10px;
+}
+
+.related-panel {
+  margin-top: 24px;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 28px 22px;
+  background: linear-gradient(180deg, #101a2c 0%, #172133 100%);
+  color: #fffaf0;
+  box-shadow: var(--sidebar-shadow);
+}
+
+.brand-block {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding-bottom: 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.logo-mark {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border: 1px solid rgba(238, 212, 159, 0.72);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #c9a24c, #82621f);
+  color: white;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.brand-block strong,
+.brand-block span {
+  display: block;
+}
+
+.brand-block strong {
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.brand-block span {
+  margin-top: 3px;
+  color: rgba(255, 250, 240, 0.68);
+  font-size: 0.82rem;
+}
+
+.sidebar-nav {
+  display: grid;
+  gap: 8px;
+  margin: 28px 0;
+}
+
+.sidebar-nav button {
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: rgba(255, 250, 240, 0.78);
+  padding: 13px 14px;
+  text-align: left;
+  text-decoration: none;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+body.rtl .sidebar-nav button {
+  text-align: right;
+}
+
+.sidebar-nav button:hover,
+.sidebar-nav button.active {
+  background: rgba(182, 138, 53, 0.18);
+  color: #fffaf0;
+  transform: translateX(2px);
+}
+
+body.rtl .sidebar-nav button:hover,
+body.rtl .sidebar-nav button.active {
+  transform: translateX(-2px);
+}
+
+.sidebar-card {
+  margin-top: auto;
+  border: 1px solid rgba(238, 212, 159, 0.28);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 18px;
+}
+
+.sidebar-card p,
+.sidebar-card span {
+  margin: 0;
+  color: rgba(255, 250, 240, 0.66);
+  font-size: 0.82rem;
+}
+
+.sidebar-card strong {
+  display: block;
+  margin: 8px 0;
+  color: #f4d88f;
+}
+
+.app-shell {
+  width: min(1560px, 100%);
+  margin: 0 auto;
+  padding: 30px;
+}
+
+.topbar {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding: 22px 24px;
+  border: 1px solid rgba(230, 220, 203, 0.78);
+  border-radius: 22px;
+  background: rgba(255, 253, 248, 0.82);
+  box-shadow: 0 16px 42px rgba(30, 25, 18, 0.07);
+  backdrop-filter: blur(16px);
+}
+
+.topbar h1 {
+  margin-bottom: 0;
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.topbar-actions > span {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--gold-dark);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  padding: 10px 14px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 0;
+}
+
+.eyebrow,
+.section-label {
+  margin: 0 0 8px;
+  color: var(--gold-dark);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  max-width: 860px;
+  margin-bottom: 12px;
+  color: var(--navy);
+  font-size: clamp(1.8rem, 3.1vw, 3.2rem);
+  line-height: 1.08;
+}
+
+.hero-copy {
+  max-width: 760px;
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(110px, 1fr));
+  gap: 12px;
+}
+
+.hero-stats div {
+  min-width: 120px;
+  padding: 18px 20px;
+  border: 1px solid rgba(230, 220, 203, 0.9);
+  border-radius: 18px;
+  background: rgba(255, 253, 248, 0.86);
+  box-shadow: 0 12px 32px rgba(30, 25, 18, 0.07);
+}
+
+.hero-stats span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--navy);
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.hero-stats small {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.layout-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.stock-layout,
+.maintenance-layout {
+  grid-template-columns: minmax(360px, 520px) minmax(0, 1fr);
+}
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: rgba(255, 253, 248, 0.94);
+  box-shadow: var(--shadow);
+}
+
+.asset-form,
+.inventory-panel,
+.dashboard-panel {
+  padding: 22px;
+}
+
+.panel-heading,
+.toolbar,
+.filters {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panel-heading,
+.toolbar {
+  margin-bottom: 20px;
+}
+
+h2 {
+  margin-bottom: 0;
+  color: var(--navy);
+  font-size: 1.28rem;
+}
+
+form {
+  display: grid;
+  gap: 16px;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  color: var(--charcoal);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fffaf1;
+  color: var(--text);
+  padding: 12px 13px;
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+textarea {
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: rgba(182, 138, 53, 0.78);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(182, 138, 53, 0.14);
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.primary-btn,
+.secondary-btn,
+.ghost-btn,
+.action-btn {
+  border: 0;
+  border-radius: 999px;
+  font-weight: 800;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.primary-btn {
+  margin-top: 6px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: white;
+  padding: 13px 16px;
+  box-shadow: 0 14px 26px rgba(140, 103, 35, 0.24);
+}
+
+.secondary-btn,
+.ghost-btn {
+  background: var(--navy);
+  color: #fffaf0;
+  padding: 11px 16px;
+}
+
+.ghost-btn {
+  border: 1px solid var(--line);
+  background: #fffaf1;
+  color: var(--muted);
+}
+
+.primary-btn:hover,
+.secondary-btn:hover,
+.ghost-btn:hover,
+.action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.primary-btn:hover {
+  filter: brightness(0.94);
+}
+
+.filters {
+  align-items: end;
+  margin-bottom: 18px;
+}
+
+.search-field {
+  flex: 1;
+}
+
+.filters label:not(.search-field) {
+  width: min(220px, 100%);
+}
+
+.stock-filters label:not(.search-field) {
+  width: min(190px, 100%);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fffdf8;
+}
+
+table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+}
+
+.stock-table {
+  min-width: 1540px;
+}
+
+th,
+td {
+  padding: 16px 15px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+body.rtl th,
+body.rtl td {
+  text-align: right;
+}
+
+th {
+  background: #fbf5e9;
+  color: #6b5d42;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+tbody tr:hover {
+  background: #fff9ef;
+}
+
+.low-stock-row {
+  background: #fff1ee;
+}
+
+.low-stock-row:hover {
+  background: #ffe8e3;
+}
+
+.asset-name {
+  display: grid;
+  gap: 4px;
+  font-weight: 800;
+}
+
+.asset-name small {
+  max-width: 280px;
+  overflow: hidden;
+  color: var(--muted);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 94px;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.status-active {
+  background: #eaf7ec;
+  color: #1f6b36;
+}
+
+.status-assigned {
+  background: #eaf3ff;
+  color: #075eea;
+}
+
+.status-in-storage {
+  background: #edf3f8;
+  color: #1b4d66;
+}
+
+.status-maintenance {
+  background: var(--gold-soft);
+  color: var(--gold-dark);
+}
+
+.status-retired {
+  background: #efede9;
+  color: #5f5951;
+}
+
+.status-available {
+  background: #eaf7ec;
+  color: #1f6b36;
+}
+
+.status-reserved {
+  background: var(--gold-soft);
+  color: var(--gold-dark);
+}
+
+.status-discontinued {
+  background: #efede9;
+  color: #5f5951;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 8px 12px;
+  background: #f3ead8;
+  color: var(--gold-dark);
+}
+
+.action-btn.delete {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.empty-state {
+  margin-top: 18px;
+  padding: 34px;
+  border: 1px dashed var(--line);
+  border-radius: 18px;
+  background: #fffaf1;
+  text-align: center;
+}
+
+.table-meta {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 8px 12px;
+}
+
+.app-page {
+  display: block;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(150px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.executive-summary {
+  grid-template-columns: repeat(5, minmax(150px, 1fr));
+}
+
+.summary-card {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255, 253, 248, 0.94);
+  box-shadow: 0 16px 38px rgba(30, 25, 18, 0.08);
+  padding: 20px;
+  overflow: hidden;
+}
+
+.card-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 14px;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--gold-soft);
+  color: var(--gold-dark);
+  font-weight: 900;
+}
+
+.summary-card p {
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.summary-card strong {
+  display: block;
+  color: var(--navy);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.summary-card.warning strong {
+  color: var(--danger);
+}
+
+.watchlist {
+  display: grid;
+  gap: 12px;
+}
+
+.watchlist-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 14px;
+  align-items: center;
+  border: 1px solid #f4c7c2;
+  border-radius: 16px;
+  background: #fff1ee;
+  padding: 14px 16px;
+}
+
+.cell-note {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.watchlist-item strong,
+.watchlist-item span {
+  display: block;
+}
+
+.watchlist-item strong {
+  color: var(--navy);
+}
+
+.watchlist-item span,
+.watchlist-item small {
+  color: var(--muted);
+}
+
+.warning-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--danger);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 900;
+  margin-left: 8px;
+  padding: 5px 8px;
+  white-space: nowrap;
+}
+
+body.rtl .warning-badge {
+  margin-right: 8px;
+  margin-left: 0;
+}
+
+.language-switcher {
+  display: grid;
+  min-width: 150px;
+  gap: 6px;
+  color: var(--gold-dark);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.language-switcher select {
+  padding: 9px 12px;
+  border-radius: 999px;
+}
+
+.compact-empty {
+  margin: 0;
+  padding: 22px;
+}
+
+.used-items-block {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fffaf1;
+  padding: 16px;
+}
+
+.compact-toolbar {
+  margin-bottom: 0;
+}
+
+.compact-toolbar h2 {
+  font-size: 1rem;
+}
+
+.used-items-list {
+  display: grid;
+  gap: 10px;
+}
+
+.used-item-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 6px;
+}
+
+form > button.primary-btn:not([data-submit-mode]) {
+  display: none;
+}
+
+.form-actions button {
+  flex: 1 1 135px;
+}
+
+.toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 80;
+  max-width: min(420px, calc(100vw - 48px));
+  border: 1px solid rgba(182, 138, 53, 0.36);
+  border-radius: 16px;
+  background: var(--navy);
+  color: #fffaf0;
+  box-shadow: 0 18px 46px rgba(17, 27, 45, 0.24);
+  opacity: 0;
+  padding: 14px 18px;
+  pointer-events: none;
+  transform: translateY(12px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+body.rtl .toast {
+  right: auto;
+  left: 24px;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(17, 27, 45, 0.54);
+  backdrop-filter: blur(8px);
+}
+
+.modal-card {
+  display: grid;
+  gap: 16px;
+  width: min(720px, 100%);
+  max-height: min(86vh, 820px);
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--panel);
+  box-shadow: 0 30px 80px rgba(17, 27, 45, 0.28);
+  padding: 24px;
+}
+
+.modal-header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.qr-card {
+  justify-items: center;
+  width: min(560px, 100%);
+}
+
+#qrCanvas {
+  border: 12px solid #fffaf1;
+  border-radius: 18px;
+  background: #fffdf8;
+  box-shadow: 0 14px 34px rgba(30, 25, 18, 0.12);
+}
+
+.qr-payload {
+  width: 100%;
+  max-height: 180px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fffaf1;
+  color: var(--charcoal);
+  padding: 14px;
+  white-space: pre-wrap;
+}
+
+.empty-state h3 {
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media (max-width: 1050px) {
+  .dashboard-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    min-height: auto;
+  }
+
+  .sidebar-nav {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .sidebar-card {
+    display: none;
+  }
+
+  .hero,
+  .layout-grid,
+  .stock-layout,
+  .maintenance-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-stats {
+    width: 100%;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell {
+    padding: 18px;
+  }
+
+  .sidebar {
+    padding: 20px;
+  }
+
+  .sidebar-nav {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .topbar,
+  .topbar-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .topbar-actions,
+  .topbar-actions .secondary-btn {
+    width: 100%;
+  }
+
+  .hero {
+    padding-top: 10px;
+  }
+
+  h1 {
+    font-size: 2.25rem;
+  }
+
+  .hero-stats,
+  .two-col,
+  .filters,
+  .used-item-row {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-stats,
+  .filters {
+    display: grid;
+  }
+
+  .filters label:not(.search-field) {
+    width: 100%;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .watchlist-item {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-heading,
+  .toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .secondary-btn,
+  .ghost-btn,
+  .primary-btn,
+  .form-actions button,
+  .actions .action-btn {
+    width: 100%;
+  }
+}
+
+/* Enterprise dashboard redesign inspired by the provided reference. */
+:root {
+  --bg: #f7f9fc;
+  --panel: #ffffff;
+  --text: #071426;
+  --muted: #667085;
+  --line: #e8edf5;
+  --navy: #031a33;
+  --navy-2: #052849;
+  --blue: #075eea;
+  --blue-dark: #034bbd;
+  --gold: #d9a92f;
+  --gold-dark: #a97814;
+  --shadow: 0 14px 38px rgba(16, 24, 40, 0.07);
+  --sidebar-shadow: -18px 0 42px rgba(3, 26, 51, 0.20);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+body.rtl {
+  font-family: Tahoma, "Segoe UI", Arial, sans-serif;
+}
+
+.dashboard-shell {
+  grid-template-columns: 300px minmax(0, 1fr);
+  background: var(--bg);
+}
+
+body.rtl .dashboard-shell {
+  grid-template-columns: minmax(0, 1fr) 320px;
+}
+
+body.rtl .sidebar {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+body.rtl .app-shell {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.sidebar {
+  overflow: hidden;
+  padding: 26px 20px;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(7, 94, 234, 0.26), transparent 28rem),
+    linear-gradient(180deg, #061c36 0%, #021427 100%);
+  box-shadow: var(--sidebar-shadow);
+}
+
+.brand-block {
+  justify-content: flex-start;
+  padding-bottom: 26px;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+body.rtl .brand-block {
+  flex-direction: row-reverse;
+}
+
+.logo-mark {
+  border: 0;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #f6d779, #d5a11e);
+  color: #071426;
+  box-shadow: 0 14px 24px rgba(217, 169, 47, 0.28);
+}
+
+.brand-block strong {
+  color: #ffffff;
+  font-size: 1.02rem;
+}
+
+.brand-block span {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.sidebar-nav {
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.sidebar-nav button {
+  position: relative;
+  display: grid;
+  min-height: 70px;
+  align-items: center;
+  border-radius: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.94rem;
+  font-weight: 800;
+  padding: 15px 58px 15px 16px;
+}
+
+body:not(.rtl) .sidebar-nav button {
+  padding: 15px 16px 15px 58px;
+}
+
+.sidebar-nav button::before {
+  content: "";
+  position: absolute;
+  inset-inline-end: 18px;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.88);
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+body:not(.rtl) .sidebar-nav button::before {
+  inset-inline-end: auto;
+  inset-inline-start: 18px;
+}
+
+.sidebar-nav button:nth-child(1) { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M3 11l9-8 9 8'/%3E%3Cpath d='M5 10v10h14V10'/%3E%3C/svg%3E"); }
+.sidebar-nav button:nth-child(2) { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='13' rx='2'/%3E%3Cpath d='M8 21h8M12 17v4'/%3E%3C/svg%3E"); }
+.sidebar-nav button:nth-child(3) { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M21 8l-9-5-9 5 9 5 9-5z'/%3E%3Cpath d='M3 8v8l9 5 9-5V8'/%3E%3C/svg%3E"); }
+.sidebar-nav button:nth-child(4) { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-3 3-2-2 3-3z'/%3E%3C/svg%3E"); }
+.sidebar-nav button:nth-child(5) { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M3 7h11v10H3zM14 11h4l3 3v3h-7z'/%3E%3Ccircle cx='7' cy='19' r='2'/%3E%3Ccircle cx='18' cy='19' r='2'/%3E%3C/svg%3E"); }
+.sidebar-nav button:nth-child(6) { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M4 13a8 8 0 0 1 16 0'/%3E%3Cpath d='M4 13v4a2 2 0 0 0 2 2h2v-8H6a2 2 0 0 0-2 2zM20 13v4a2 2 0 0 1-2 2h-2v-8h2a2 2 0 0 1 2 2z'/%3E%3C/svg%3E"); }
+.sidebar-nav button:nth-child(7) { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21a8 8 0 0 1 16 0'/%3E%3C/svg%3E"); }
+.sidebar-nav button:nth-child(8) { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M4 19V5M4 19h16'/%3E%3Cpath d='M8 16v-5M12 16V8M16 16v-3'/%3E%3C/svg%3E"); }
+.sidebar-nav button:nth-child(9) { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M19.4 15a8 8 0 0 0 .1-6l2-1.2-2-3.4-2.1 1.2a8 8 0 0 0-5.2-3v-2.4h-4v2.4a8 8 0 0 0-5.2 3L1 4.4l-2 3.4L1 9a8 8 0 0 0 0 6l-2 1.2 2 3.4 2.1-1.2a8 8 0 0 0 5.2 3v2.4h4v-2.4a8 8 0 0 0 5.2-3l2.1 1.2 2-3.4-2.2-1.2z'/%3E%3C/svg%3E"); }
+
+.sidebar-nav button:hover,
+.sidebar-nav button.active {
+  background: linear-gradient(180deg, #0969ff, #0356d8);
+  color: #ffffff;
+  box-shadow: 0 16px 28px rgba(3, 86, 216, 0.34);
+  transform: none;
+}
+
+.sidebar-card {
+  display: grid;
+  gap: 18px;
+  border: 0;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  text-align: center;
+}
+
+.sidebar-card::before {
+  content: "🌙";
+  color: white;
+  font-size: 1.6rem;
+}
+
+.sidebar-card strong::after {
+  content: "\A System Version 1.0.0";
+  white-space: pre;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.app-shell {
+  width: 100%;
+  padding: 0;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  min-height: 86px;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: none;
+}
+
+.topbar-title {
+  padding-inline: 8px;
+}
+
+.topbar h1 {
+  font-size: 1.45rem;
+}
+
+.topbar-actions {
+  flex-wrap: wrap;
+}
+
+.company-switcher,
+.language-switcher {
+  min-width: 148px;
+  color: #344054;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.company-switcher span,
+.language-switcher span {
+  font-size: 0.72rem;
+}
+
+.company-switcher select,
+.language-switcher select {
+  border-color: var(--line);
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.topbar-actions > span {
+  display: none;
+}
+
+.icon-btn {
+  position: relative;
+  display: inline-grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.notification-btn span {
+  position: absolute;
+  top: -7px;
+  inset-inline-end: -6px;
+  display: grid;
+  min-width: 19px;
+  height: 19px;
+  place-items: center;
+  border-radius: 999px;
+  background: #e60019;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.user-profile {
+  grid-template-columns: auto auto;
+  align-items: center;
+  border: 0;
+  padding: 0;
+}
+
+.user-profile small {
+  grid-column: 2;
+}
+
+.user-avatar {
+  grid-row: 1 / span 2;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 50%;
+  background: #d8e6ff;
+  color: #071426;
+  font-weight: 900;
+}
+
+.app-page {
+  padding: 28px 28px 24px;
+}
+
+.welcome-panel {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 20px;
+  text-align: right;
+}
+
+body:not(.rtl) .welcome-panel {
+  text-align: left;
+}
+
+.welcome-panel h2 {
+  margin-bottom: 8px;
+  font-size: 1.8rem;
+}
+
+.welcome-panel p {
+  margin-bottom: 2px;
+  color: #344054;
+  font-weight: 700;
+}
+
+.welcome-panel small {
+  color: var(--muted);
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.executive-summary {
+  grid-template-columns: repeat(5, minmax(170px, 1fr));
+}
+
+.summary-card,
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+}
+
+.summary-card {
+  position: relative;
+  min-height: 150px;
+  padding: 20px 22px;
+}
+
+.summary-card .card-icon {
+  position: absolute;
+  top: 20px;
+  inset-inline-end: 22px;
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  border-radius: 50%;
+  background: #eaf3ff;
+  color: #075eea;
+  font-size: 1.55rem;
+}
+
+.summary-card:nth-child(2) .card-icon,
+.summary-card:nth-child(5) .card-icon {
+  background: #fff3d7;
+}
+
+.summary-card p {
+  max-width: 70%;
+  margin-bottom: 14px;
+  color: #1d2939;
+  font-size: 0.96rem;
+  font-weight: 800;
+}
+
+.summary-card strong {
+  display: block;
+  color: #071426;
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.summary-card a,
+.toolbar a {
+  color: #005ea8;
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.dashboard-main-grid {
+  display: grid;
+  grid-template-columns: minmax(340px, 0.85fr) minmax(0, 1.15fr);
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.dashboard-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr;
+  gap: 18px;
+}
+
+.dashboard-panel {
+  padding: 18px;
+}
+
+.toolbar {
+  align-items: flex-start;
+}
+
+.toolbar h2 {
+  font-size: 1.08rem;
+}
+
+.section-label {
+  color: #344054;
+  font-size: 0.78rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.chart-card-body {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(180px, 1fr);
+  gap: 22px;
+  align-items: center;
+}
+
+.donut-chart {
+  position: relative;
+  width: min(260px, 100%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(#16a34a 0 75%, #0d6efd 75% 88%, #f59e0b 88% 96%, #ef4444 96% 100%);
+  margin: 4px auto;
+}
+
+.donut-chart::after {
+  content: "";
+  position: absolute;
+  inset: 34%;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.chart-legend {
+  display: grid;
+  gap: 14px;
+}
+
+.chart-legend div {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.chart-legend span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.chart-legend strong {
+  font-size: 0.9rem;
+}
+
+.chart-legend small {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.chart-total {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.compact-table {
+  border-radius: 12px;
+}
+
+.compact-table table {
+  min-width: 100%;
+}
+
+.compact-table th,
+.compact-table td {
+  padding: 12px 14px;
+}
+
+.compact-table th {
+  background: #f8fafc;
+  color: #475467;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.dashboard-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.layout-grid,
+.stock-layout,
+.maintenance-layout {
+  gap: 20px;
+}
+
+.asset-form,
+.inventory-panel,
+.dashboard-panel {
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 20px;
+}
+
+input,
+select,
+textarea {
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.primary-btn {
+  background: linear-gradient(180deg, #0969ff, #0356d8);
+  box-shadow: 0 14px 24px rgba(3, 86, 216, 0.22);
+}
+
+.secondary-btn {
+  background: #075eea;
+}
+
+.ghost-btn {
+  background: #ffffff;
+  color: #344054;
+}
+
+@media (max-width: 1180px) {
+  .dashboard-shell,
+  body.rtl .dashboard-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar,
+  body.rtl .sidebar,
+  .app-shell,
+  body.rtl .app-shell {
+    grid-column: 1;
+  }
+
+  .sidebar {
+    position: relative;
+    min-height: auto;
+  }
+
+  .sidebar-nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .executive-summary,
+  .summary-grid,
+  .dashboard-main-grid,
+  .dashboard-bottom-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-page {
+    padding: 18px;
+  }
+
+  .topbar {
+    align-items: stretch;
+    padding: 16px;
+  }
+
+  .topbar-actions {
+    width: 100%;
+  }
+
+  .sidebar-nav,
+  .executive-summary,
+  .summary-grid,
+  .dashboard-main-grid,
+  .dashboard-bottom-grid,
+  .chart-card-body {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar-nav button {
+    min-height: 58px;
+  }
+
+  .dashboard-footer {
+    flex-direction: column;
+  }
+
+  .table-wrap {
+    border-radius: 12px;
+  }
+
+  th,
+  td {
+    padding: 12px 10px;
+  }
+
+  .form-actions,
+  .actions {
+    flex-direction: column;
+  }
+
+  .form-actions button,
+  .actions .action-btn {
+    width: 100%;
+  }
+}
+
+/* Final Amjaad reference alignment: fixed company, premium banner, RTL polish. */
+body.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+body:not(.rtl) {
+  direction: ltr;
+  text-align: left;
+}
+
+body.rtl .dashboard-shell {
+  grid-template-columns: minmax(0, 1fr) 304px;
+}
+
+body:not(.rtl) .dashboard-shell {
+  grid-template-columns: 304px minmax(0, 1fr);
+}
+
+body.rtl .sidebar {
+  grid-column: 2;
+}
+
+body:not(.rtl) .sidebar {
+  grid-column: 1;
+}
+
+body.rtl .app-shell {
+  grid-column: 1;
+}
+
+body:not(.rtl) .app-shell {
+  grid-column: 2;
+}
+
+body.rtl .topbar,
+body.rtl .topbar-actions,
+body.rtl .toolbar,
+body.rtl .panel-heading,
+body.rtl .summary-card,
+body.rtl .asset-form,
+body.rtl .inventory-panel,
+body.rtl .dashboard-panel {
+  text-align: right;
+}
+
+body:not(.rtl) .topbar,
+body:not(.rtl) .topbar-actions,
+body:not(.rtl) .toolbar,
+body:not(.rtl) .panel-heading,
+body:not(.rtl) .summary-card,
+body:not(.rtl) .asset-form,
+body:not(.rtl) .inventory-panel,
+body:not(.rtl) .dashboard-panel {
+  text-align: left;
+}
+
+.fixed-company {
+  display: grid;
+  gap: 1px;
+  min-width: 150px;
+  border-color: rgba(197, 155, 53, 0.35);
+  background: linear-gradient(135deg, #fffaf0, #ffffff);
+}
+
+.fixed-company span {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.fixed-company strong {
+  color: var(--navy);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.welcome-panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px;
+  align-items: center;
+  min-height: 210px;
+  overflow: hidden;
+  border: 1px solid rgba(15, 108, 189, 0.14);
+  border-radius: 22px;
+  background:
+    linear-gradient(110deg, rgba(6, 33, 63, 0.92) 0 42%, rgba(6, 33, 63, 0.42) 42% 100%),
+    repeating-linear-gradient(90deg, transparent 0 18px, rgba(255, 255, 255, 0.08) 18px 20px),
+    repeating-linear-gradient(0deg, transparent 0 24px, rgba(255, 255, 255, 0.07) 24px 26px),
+    radial-gradient(circle at 88% 28%, rgba(197, 155, 53, 0.24), transparent 13rem),
+    linear-gradient(135deg, #06213f 0%, #0b3a68 52%, #0f6cbd 100%);
+  box-shadow: 0 22px 52px rgba(6, 33, 63, 0.18);
+  color: #ffffff;
+}
+
+body.rtl .welcome-panel {
+  grid-template-columns: 150px minmax(0, 1fr);
+}
+
+.welcome-panel::before {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 18px;
+  pointer-events: none;
+}
+
+.welcome-panel::after {
+  content: "";
+  position: absolute;
+  width: 420px;
+  height: 180px;
+  inset-block-end: 0;
+  inset-inline-end: 46px;
+  border-radius: 18px 18px 0 0;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.18) 0 18%, transparent 18% 24%, rgba(255, 255, 255, 0.14) 24% 42%, transparent 42% 50%, rgba(255, 255, 255, 0.16) 50% 70%, transparent 70% 78%, rgba(255, 255, 255, 0.13) 78% 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.02));
+  clip-path: polygon(0 28%, 14% 28%, 14% 8%, 32% 8%, 32% 34%, 48% 34%, 48% 0, 68% 0, 68% 24%, 84% 24%, 84% 14%, 100% 14%, 100% 100%, 0 100%);
+  opacity: 0.42;
+}
+
+body.rtl .welcome-panel::after {
+  inset-inline-end: auto;
+  inset-inline-start: 46px;
+  transform: scaleX(-1);
+}
+
+.amjaad-banner-copy {
+  position: relative;
+  z-index: 1;
+  padding: 12px;
+}
+
+body.rtl .amjaad-banner-copy {
+  grid-column: 2;
+}
+
+.banner-kicker {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  border: 1px solid rgba(255, 225, 155, 0.36);
+  border-radius: 999px;
+  background: rgba(197, 155, 53, 0.18);
+  color: #ffe7a1;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  padding: 7px 12px;
+}
+
+.welcome-panel h2 {
+  max-width: 760px;
+  margin: 14px 0 8px;
+  color: #ffffff;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.welcome-panel p {
+  margin: 0;
+  color: #f7d88b;
+  font-size: clamp(1.05rem, 2vw, 1.45rem);
+  font-weight: 800;
+}
+
+.welcome-panel small {
+  display: block;
+  max-width: 680px;
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.amjaad-banner-mark {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 128px;
+  height: 128px;
+  place-items: center;
+  justify-self: end;
+  border: 1px solid rgba(255, 225, 155, 0.48);
+  border-radius: 30px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 242, 207, 0.9));
+  box-shadow: 0 22px 42px rgba(0, 0, 0, 0.18);
+}
+
+.amjaad-banner-mark::before {
+  content: "";
+  position: absolute;
+  inset: 17px 21px;
+  border: 3px solid var(--gold);
+  border-block-end-width: 7px;
+  clip-path: polygon(50% 0, 100% 24%, 100% 100%, 0 100%, 0 24%);
+  opacity: 0.55;
+}
+
+body.rtl .amjaad-banner-mark {
+  grid-column: 1;
+  justify-self: start;
+}
+
+.amjaad-banner-mark span {
+  color: var(--navy);
+  font-size: 2rem;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+}
+
+.executive-summary {
+  grid-template-columns: repeat(4, minmax(190px, 1fr));
+}
+
+.summary-card {
+  border-radius: 18px;
+  box-shadow: 0 12px 32px rgba(16, 24, 40, 0.07);
+}
+
+.summary-card:hover,
+.panel:hover {
+  box-shadow: 0 18px 42px rgba(16, 24, 40, 0.10);
+}
+
+.summary-card .card-icon {
+  background: linear-gradient(135deg, #eaf3ff, #ffffff);
+  box-shadow: inset 0 0 0 1px rgba(15, 108, 189, 0.12);
+}
+
+.dashboard-panel,
+.asset-form,
+.inventory-panel {
+  border-radius: 18px;
+}
+
+.table-wrap {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.topbar {
+  box-shadow: 0 8px 22px rgba(16, 24, 40, 0.045);
+}
+
+.company-switcher select {
+  display: none;
+}
+
+@media (max-width: 1180px) {
+  body.rtl .dashboard-shell,
+  body:not(.rtl) .dashboard-shell,
+  .dashboard-shell {
+    grid-template-columns: 1fr;
+  }
+
+  body.rtl .sidebar,
+  body:not(.rtl) .sidebar,
+  body.rtl .app-shell,
+  body:not(.rtl) .app-shell,
+  .sidebar,
+  .app-shell {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 760px) {
+  .welcome-panel,
+  body.rtl .welcome-panel {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding: 22px;
+  }
+
+  .amjaad-banner-copy,
+  body.rtl .amjaad-banner-copy,
+  .amjaad-banner-mark,
+  body.rtl .amjaad-banner-mark {
+    grid-column: auto;
+  }
+
+  .amjaad-banner-mark {
+    width: 86px;
+    height: 86px;
+    justify-self: start;
+    border-radius: 22px;
+  }
+
+  body.rtl .amjaad-banner-mark {
+    justify-self: end;
+  }
+
+  .amjaad-banner-mark span {
+    font-size: 1.35rem;
+  }
+
+  .executive-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .fixed-company {
+    min-width: 100%;
+  }
+}
+
+/* Reference image final pass: premium dark navy + gold enterprise dashboard. */
+:root {
+  --bg: #f5f7fa;
+  --panel: #ffffff;
+  --text: #0f172a;
+  --muted: #667085;
+  --line: #e8edf5;
+  --navy: #0f172a;
+  --navy-2: #111f36;
+  --blue: #0d2d5e;
+  --blue-2: #123a73;
+  --gold: #d4af37;
+  --gold-hover: #f4d03f;
+  --gold-soft: #fbf2d2;
+  --shadow: 0 18px 42px rgba(15, 23, 42, 0.10);
+  --shadow-soft: 0 10px 28px rgba(15, 23, 42, 0.075);
+  --radius: 16px;
+}
+
+body {
+  background:
+    radial-gradient(circle at 18% 6%, rgba(212, 175, 55, 0.08), transparent 24rem),
+    radial-gradient(circle at 72% 0%, rgba(13, 45, 94, 0.08), transparent 30rem),
+    #f5f7fa;
+  color: var(--text);
+}
+
+.dashboard-shell {
+  grid-template-columns: 304px minmax(0, 1fr);
+}
+
+body.rtl .dashboard-shell {
+  grid-template-columns: minmax(0, 1fr) 304px;
+}
+
+.sidebar,
+body:not(.rtl) .sidebar {
+  grid-column: 1;
+  width: 304px;
+  padding: 28px 22px;
+  background:
+    radial-gradient(circle at 24% 0%, rgba(212, 175, 55, 0.13), transparent 16rem),
+    linear-gradient(180deg, #0f172a 0%, #07111f 100%);
+  box-shadow: 16px 0 44px rgba(15, 23, 42, 0.18);
+}
+
+body.rtl .sidebar {
+  grid-column: 2;
+  box-shadow: -16px 0 44px rgba(15, 23, 42, 0.18);
+}
+
+.app-shell,
+body:not(.rtl) .app-shell {
+  grid-column: 2;
+}
+
+body.rtl .app-shell {
+  grid-column: 1;
+}
+
+.brand-block {
+  grid-template-columns: 62px minmax(0, 1fr);
+  min-height: 98px;
+  gap: 14px;
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+body.rtl .brand-block {
+  grid-template-columns: minmax(0, 1fr) 62px;
+}
+
+.logo-mark {
+  width: 62px;
+  height: 62px;
+  border: 0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--gold-hover), var(--gold));
+  box-shadow: 0 18px 34px rgba(212, 175, 55, 0.25);
+}
+
+.logo-mark::before {
+  content: "A";
+  color: #0f172a;
+  font-size: 2rem;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.brand-block strong {
+  color: var(--gold);
+  font-size: 1.16rem;
+  letter-spacing: 0.04em;
+}
+
+.brand-block span {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.86rem;
+}
+
+.sidebar-nav {
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.sidebar-nav button {
+  min-height: 62px;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.88);
+  padding: 12px 48px 12px 16px;
+  font-size: 1rem;
+}
+
+body.rtl .sidebar-nav button {
+  padding: 12px 16px 12px 48px;
+  text-align: right;
+}
+
+body:not(.rtl) .sidebar-nav button {
+  text-align: left;
+}
+
+.sidebar-nav button::before {
+  color: currentColor;
+  inset-inline-end: 16px;
+}
+
+body.rtl .sidebar-nav button::before {
+  inset-inline-start: 16px;
+  inset-inline-end: auto;
+}
+
+.sidebar-nav button:hover {
+  border-color: rgba(212, 175, 55, 0.55);
+  background: rgba(255, 255, 255, 0.055);
+  color: #ffffff;
+}
+
+.sidebar-nav button.active {
+  border-color: rgba(244, 208, 63, 0.5);
+  background: linear-gradient(135deg, #f4d03f, #c79a1d);
+  color: #ffffff;
+  box-shadow: 0 14px 30px rgba(212, 175, 55, 0.28);
+}
+
+.sidebar-nav button.active::after {
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.sidebar-card {
+  border-color: rgba(212, 175, 55, 0.24);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.topbar {
+  min-height: 112px;
+  align-items: flex-start;
+  border-bottom: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 28px 34px 18px;
+}
+
+body.rtl .topbar {
+  flex-direction: row-reverse;
+}
+
+body:not(.rtl) .topbar {
+  flex-direction: row;
+}
+
+.topbar-title {
+  display: grid;
+  gap: 6px;
+  flex: 1;
+  text-align: end;
+}
+
+body:not(.rtl) .topbar-title {
+  text-align: start;
+}
+
+.topbar-title .eyebrow {
+  color: #8a94a6;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.topbar h1 {
+  color: #0b1220;
+  font-size: clamp(2rem, 3vw, 3.25rem);
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.topbar-actions {
+  flex: 0 0 auto;
+  justify-content: flex-start;
+}
+
+body:not(.rtl) .topbar-actions {
+  justify-content: flex-end;
+}
+
+.icon-btn,
+.language-switcher,
+.fixed-company,
+.user-profile {
+  min-height: 54px;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.fixed-company {
+  border-color: rgba(212, 175, 55, 0.42);
+}
+
+.app-page {
+  padding: 6px 34px 28px;
+}
+
+.welcome-panel {
+  min-height: 138px;
+  margin-bottom: 22px;
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  border-radius: 20px;
+  background:
+    linear-gradient(100deg, rgba(15, 23, 42, 0.9) 0 35%, rgba(15, 23, 42, 0.36) 35% 100%),
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.09) 22px 24px),
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(255, 255, 255, 0.075) 28px 30px),
+    linear-gradient(135deg, #0f172a, #0d2d5e);
+  box-shadow: var(--shadow);
+}
+
+.welcome-panel h2 {
+  margin-top: 10px;
+  font-size: clamp(1.55rem, 2.4vw, 2.4rem);
+  letter-spacing: -0.025em;
+}
+
+.welcome-panel p {
+  color: var(--gold-hover);
+}
+
+.welcome-panel small {
+  max-width: 720px;
+}
+
+.amjaad-banner-mark {
+  width: 102px;
+  height: 102px;
+  border-radius: 22px;
+}
+
+.amjaad-banner-mark span {
+  font-size: 1.55rem;
+}
+
+.executive-summary {
+  grid-template-columns: repeat(4, minmax(190px, 1fr));
+  gap: 22px;
+  margin-bottom: 26px;
+}
+
+.summary-card {
+  min-height: 186px;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.10);
+}
+
+.summary-card::before {
+  height: 0;
+}
+
+.summary-card .card-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fff7dc, #f3df98);
+  color: #b88400;
+  font-size: 1.65rem;
+  box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.24);
+}
+
+.summary-card p {
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.summary-card strong {
+  display: block;
+  margin-top: 22px;
+  color: #0b1220;
+  font-size: 2.25rem;
+  text-align: center;
+}
+
+.summary-card a {
+  color: #0d2d5e;
+}
+
+.dashboard-main-grid {
+  grid-template-columns: minmax(340px, 0.82fr) minmax(0, 1.18fr);
+  gap: 24px;
+  margin-bottom: 26px;
+}
+
+.dashboard-bottom-grid {
+  gap: 24px;
+}
+
+.dashboard-panel,
+.asset-form,
+.inventory-panel {
+  border-radius: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.toolbar h2,
+.panel-heading h2 {
+  color: #0b1220;
+  font-size: 1.18rem;
+}
+
+.donut-chart {
+  border-width: 28px;
+  box-shadow: 0 18px 34px rgba(15, 23, 42, 0.08), inset 0 0 0 1px #e8edf5;
+}
+
+.table-wrap {
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.055);
+}
+
+th {
+  background: #f8fafc;
+  color: #111827;
+}
+
+td {
+  color: #263244;
+}
+
+.primary-btn,
+.secondary-btn,
+.ghost-btn,
+.action-btn {
+  border-radius: 12px;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #0d2d5e, #164b91);
+}
+
+.secondary-btn,
+.action-btn {
+  background: #f7f2dc;
+  color: #8a650c;
+}
+
+.secondary-btn:hover,
+.action-btn:hover,
+.ghost-btn:hover {
+  border-color: rgba(212, 175, 55, 0.5);
+}
+
+@media (max-width: 1180px) {
+  .topbar,
+  body.rtl .topbar,
+  body:not(.rtl) .topbar {
+    flex-direction: column;
+  }
+
+  .topbar-title,
+  body:not(.rtl) .topbar-title {
+    width: 100%;
+    text-align: start;
+  }
+
+  body.rtl .topbar-title {
+    text-align: right;
+  }
+
+  .sidebar-nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .executive-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .app-page {
+    padding: 10px 16px 18px;
+  }
+
+  .topbar {
+    padding: 18px 16px 12px;
+  }
+
+  .topbar h1 {
+    font-size: 1.7rem;
+  }
+
+  .welcome-panel {
+    min-height: auto;
+  }
+
+  .executive-summary,
+  .sidebar-nav {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-card {
+    min-height: 150px;
+  }
+}
+
+/* Reference-image dashboard clone pass. */
+body {
+  background: #f7f8fb;
+}
+
+.dashboard-shell {
+  grid-template-columns: minmax(0, 1fr) 310px;
+}
+
+body:not(.rtl) .dashboard-shell {
+  grid-template-columns: 310px minmax(0, 1fr);
+}
+
+.sidebar {
+  grid-column: 2;
+  width: 310px;
+  padding: 26px 18px 22px;
+  background:
+    radial-gradient(circle at 55% 0%, rgba(0, 87, 255, 0.18), transparent 24rem),
+    linear-gradient(180deg, #031d39 0%, #021226 100%);
+}
+
+body:not(.rtl) .sidebar {
+  grid-column: 1;
+}
+
+.app-shell {
+  grid-column: 1;
+}
+
+body:not(.rtl) .app-shell {
+  grid-column: 2;
+}
+
+.brand-block {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 54px;
+  gap: 12px;
+  text-align: right;
+}
+
+.brand-block strong {
+  font-size: 1.12rem;
+}
+
+.brand-block span {
+  font-size: 0.76rem;
+}
+
+.logo-mark {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  font-size: 0;
+}
+
+.logo-mark::before {
+  content: "▥";
+  color: #061c36;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.sidebar-nav {
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.sidebar-nav button {
+  min-height: 70px;
+  border-radius: 12px;
+  padding-block: 13px;
+  color: #f8fbff;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.sidebar-nav button::after {
+  content: attr(data-subtitle);
+  display: block;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.sidebar-nav button.active {
+  background: linear-gradient(180deg, #075eea, #064cc3);
+}
+
+.topbar {
+  height: 76px;
+  min-height: 76px;
+  padding: 12px 24px;
+  justify-content: flex-start;
+  direction: ltr;
+}
+
+.topbar-title {
+  display: none;
+}
+
+.topbar-actions {
+  width: 100%;
+  justify-content: flex-start;
+  direction: ltr;
+}
+
+.topbar-actions > * {
+  direction: rtl;
+}
+
+.company-switcher {
+  display: none;
+}
+
+#quickExportBtn {
+  display: none;
+}
+
+.user-profile {
+  order: -3;
+  margin-inline-end: 12px;
+}
+
+.notification-btn {
+  order: -2;
+}
+
+.language-switcher {
+  order: -1;
+}
+
+.app-page {
+  padding: 26px 28px 18px;
+}
+
+.welcome-panel {
+  justify-content: flex-end;
+  margin: 0 0 18px;
+  padding-inline-end: 8px;
+}
+
+.welcome-panel h2 {
+  margin: 0 0 6px;
+  color: #071426;
+  font-size: 1.72rem;
+  font-weight: 900;
+}
+
+.welcome-panel p,
+.welcome-panel small {
+  display: block;
+  margin: 0;
+  color: #475467;
+  font-size: 0.88rem;
+}
+
+.executive-summary {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.summary-card {
+  min-height: 158px;
+  border-radius: 10px;
+  padding: 22px 26px;
+  box-shadow: 0 10px 24px rgba(16, 24, 40, 0.045);
+}
+
+.summary-card .card-icon {
+  top: 22px;
+  inset-inline-end: 28px;
+  width: 62px;
+  height: 62px;
+  background: #eaf3ff;
+  font-size: 1.65rem;
+}
+
+.summary-card:nth-child(2) .card-icon,
+.summary-card:nth-child(3) .card-icon {
+  background: #fff1d9;
+}
+
+.summary-card:nth-child(4) .card-icon {
+  background: #f7ddff;
+}
+
+.summary-card p {
+  max-width: 58%;
+  min-height: 42px;
+  margin: 0 0 12px;
+  color: #101828;
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+
+.summary-card p::after {
+  content: attr(data-subtitle);
+  display: block;
+  margin-top: 2px;
+  color: #667085;
+  font-size: 0.76rem;
+  font-weight: 500;
+}
+
+.summary-card strong {
+  margin-top: 10px;
+  font-size: 1.75rem;
+  text-align: center;
+}
+
+.summary-card a {
+  position: absolute;
+  bottom: 18px;
+  inset-inline-start: 26px;
+  color: #005ea8;
+}
+
+.dashboard-main-grid {
+  grid-template-columns: 0.42fr 0.58fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.dashboard-bottom-grid {
+  grid-template-columns: 0.55fr 0.45fr;
+  gap: 14px;
+}
+
+.dashboard-panel {
+  border-radius: 10px;
+  padding: 18px 20px;
+  box-shadow: 0 10px 24px rgba(16, 24, 40, 0.045);
+}
+
+.toolbar {
+  min-height: 38px;
+  margin-bottom: 10px;
+}
+
+.toolbar h2 {
+  font-size: 1rem;
+  font-weight: 900;
+  text-align: right;
+}
+
+.toolbar .section-label {
+  margin-top: 2px;
+  font-size: 0.75rem;
+  text-align: right;
+}
+
+.chart-card-body {
+  grid-template-columns: 0.92fr 1fr;
+  gap: 22px;
+  min-height: 270px;
+}
+
+.donut-chart {
+  width: 235px;
+}
+
+.chart-legend {
+  align-content: center;
+}
+
+.chart-legend div {
+  grid-template-columns: 13px minmax(0, 1fr) auto;
+  gap: 12px;
+  padding-block: 4px;
+}
+
+.compact-table {
+  border: 0;
+}
+
+.compact-table table {
+  min-width: 100%;
+  font-size: 0.86rem;
+}
+
+.compact-table th {
+  border-bottom: 1px solid #e9edf4;
+  background: #fbfcfe;
+  color: #101828;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.compact-table th::after {
+  display: block;
+  margin-top: 2px;
+  color: #667085;
+  font-size: 0.68rem;
+  font-weight: 500;
+}
+
+.recent-panel .compact-table th:nth-child(1)::after { content: "Asset"; }
+.recent-panel .compact-table th:nth-child(2)::after { content: "Type"; }
+.recent-panel .compact-table th:nth-child(3)::after { content: "User"; }
+.recent-panel .compact-table th:nth-child(4)::after { content: "Company"; }
+.recent-panel .compact-table th:nth-child(5)::after { content: "Date Added"; }
+
+.compact-table td {
+  padding: 11px 14px;
+}
+
+.dashboard-footer {
+  justify-content: center;
+  margin-top: 14px;
+  font-size: 0.75rem;
+}
+
+.dashboard-footer span + span {
+  margin-inline-start: 36px;
+}
+
+@media (max-width: 1180px) {
+  .dashboard-shell,
+  body:not(.rtl) .dashboard-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar,
+  body:not(.rtl) .sidebar {
+    grid-column: 1;
+    width: 100%;
+  }
+
+  .app-shell,
+  body:not(.rtl) .app-shell {
+    grid-column: 1;
+  }
+}
+
+/* Premium Amjaad corporate UI pass: Microsoft 365 / ServiceNow inspired. */
+:root {
+  --bg: #f5f7fb;
+  --panel: #ffffff;
+  --text: #111827;
+  --muted: #667085;
+  --line: #e5eaf2;
+  --navy: #06213f;
+  --navy-2: #082b52;
+  --blue: #0f6cbd;
+  --blue-2: #115ea3;
+  --blue-soft: #eaf3ff;
+  --gold: #c59b35;
+  --gold-soft: #fbf4df;
+  --danger: #b42318;
+  --danger-soft: #fff1f0;
+  --success: #067647;
+  --success-soft: #ecfdf3;
+  --warning: #b54708;
+  --warning-soft: #fffaeb;
+  --shadow: 0 16px 40px rgba(16, 24, 40, 0.08);
+  --shadow-soft: 0 8px 24px rgba(16, 24, 40, 0.06);
+  --radius: 14px;
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(15, 108, 189, 0.09), transparent 28rem),
+    radial-gradient(circle at 88% 10%, rgba(197, 155, 53, 0.12), transparent 26rem),
+    var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", "Inter", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+}
+
+body.rtl {
+  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+.dashboard-shell {
+  display: grid;
+  grid-template-columns: 304px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+body.rtl .dashboard-shell {
+  grid-template-columns: minmax(0, 1fr) 304px;
+}
+
+body:not(.rtl) .dashboard-shell {
+  grid-template-columns: 304px minmax(0, 1fr);
+}
+
+.sidebar,
+body:not(.rtl) .sidebar {
+  position: sticky;
+  top: 0;
+  grid-column: 1;
+  width: 304px;
+  min-height: 100vh;
+  padding: 24px 18px;
+  background:
+    linear-gradient(180deg, rgba(15, 108, 189, 0.18), transparent 28%),
+    linear-gradient(180deg, #061f3b 0%, #031427 100%);
+  border-inline-end: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 12px 0 36px rgba(6, 33, 63, 0.16);
+}
+
+body.rtl .sidebar {
+  grid-column: 2;
+  border-inline-end: 0;
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: -12px 0 36px rgba(6, 33, 63, 0.16);
+}
+
+.app-shell,
+body:not(.rtl) .app-shell {
+  grid-column: 2;
+  min-width: 0;
+  background: transparent;
+}
+
+body.rtl .app-shell {
+  grid-column: 1;
+}
+
+.brand-block {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 76px;
+  padding: 0 6px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  text-align: start;
+}
+
+body.rtl .brand-block {
+  grid-template-columns: minmax(0, 1fr) 54px;
+  text-align: end;
+}
+
+.logo-mark {
+  position: relative;
+  display: grid;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  border: 1px solid rgba(197, 155, 53, 0.76);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ffe7a1, var(--gold));
+  color: #06213f;
+  font-size: 0;
+  box-shadow: 0 12px 26px rgba(197, 155, 53, 0.24);
+}
+
+.logo-mark::before {
+  content: "AG";
+  color: #06213f;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.brand-block strong {
+  color: #ffffff;
+  font-size: 1.02rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.brand-block span {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.78rem;
+}
+
+.sidebar-nav {
+  display: grid;
+  gap: 8px;
+  margin: 22px 0;
+}
+
+.sidebar-nav button {
+  position: relative;
+  min-height: 52px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.82);
+  padding: 10px 44px 10px 14px;
+  text-align: start;
+  font-size: 0.95rem;
+  font-weight: 700;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
+}
+
+body.rtl .sidebar-nav button {
+  padding: 10px 14px 10px 44px;
+  text-align: end;
+}
+
+.sidebar-nav button::before {
+  content: "";
+  position: absolute;
+  inset-inline-end: 14px;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  background-color: currentColor;
+  mask: var(--icon) center / contain no-repeat;
+  transform: translateY(-50%);
+  opacity: 0.9;
+}
+
+body.rtl .sidebar-nav button::before {
+  inset-inline-end: auto;
+  inset-inline-start: 14px;
+}
+
+.sidebar-nav button::after {
+  content: attr(data-subtitle);
+  display: block;
+  margin-top: 1px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.sidebar-nav button:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.sidebar-nav button.active {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: linear-gradient(135deg, var(--blue), var(--blue-2));
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(15, 108, 189, 0.3);
+}
+
+.sidebar-card {
+  margin-top: auto;
+  border: 1px solid rgba(197, 155, 53, 0.24);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.065);
+  color: #ffffff;
+  padding: 16px;
+}
+
+.sidebar-card p {
+  color: var(--gold);
+  font-weight: 800;
+}
+
+.sidebar-card span {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  min-height: 76px;
+  height: auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-bottom: 1px solid rgba(229, 234, 242, 0.86);
+  background: rgba(255, 255, 255, 0.88);
+  padding: 12px 28px;
+  backdrop-filter: blur(14px);
+}
+
+.topbar-title {
+  display: block;
+  min-width: 240px;
+}
+
+.topbar h1 {
+  margin: 0;
+  color: var(--navy);
+  font-size: 1.04rem;
+  font-weight: 800;
+}
+
+.eyebrow,
+.section-label {
+  color: var(--blue);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.topbar-actions {
+  display: flex;
+  width: auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  direction: inherit;
+}
+
+.topbar-actions > * {
+  direction: inherit;
+}
+
+.language-switcher,
+.company-switcher,
+.user-profile {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #ffffff;
+  padding: 7px 12px;
+  box-shadow: 0 5px 18px rgba(16, 24, 40, 0.04);
+}
+
+.company-switcher {
+  display: grid;
+}
+
+.user-profile {
+  display: grid;
+  grid-template-columns: 34px auto;
+  align-items: center;
+  column-gap: 9px;
+  border-radius: 14px;
+}
+
+.user-profile strong,
+.user-profile small {
+  line-height: 1.1;
+}
+
+.user-avatar {
+  grid-row: span 2;
+  background: var(--blue-soft);
+  color: var(--blue-2);
+}
+
+.icon-btn {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+}
+
+.app-page {
+  padding: 28px;
+}
+
+.welcome-panel {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(15, 108, 189, 0.08), transparent 46%),
+    #ffffff;
+  box-shadow: var(--shadow-soft);
+  margin: 0 0 18px;
+  padding: 24px;
+}
+
+.welcome-panel h2 {
+  color: var(--navy);
+  font-size: clamp(1.5rem, 2vw, 2rem);
+}
+
+.welcome-panel p,
+.welcome-panel small {
+  color: var(--muted);
+}
+
+.summary-grid,
+.executive-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.summary-card,
+.panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow-soft);
+}
+
+.summary-card {
+  position: relative;
+  min-height: 148px;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.summary-card::before {
+  content: "";
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--gold));
+}
+
+.summary-card .card-icon {
+  position: absolute;
+  inset-block-start: 18px;
+  inset-inline-end: 18px;
+  display: grid;
+  width: 50px;
+  height: 50px;
+  place-items: center;
+  border-radius: 15px;
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-size: 1.35rem;
+}
+
+.summary-card p {
+  max-width: calc(100% - 64px);
+  margin: 0 0 14px;
+  color: #344054;
+  font-weight: 800;
+}
+
+.summary-card p::after {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.summary-card strong {
+  color: var(--navy);
+  font-size: 2rem;
+  font-weight: 900;
+}
+
+.summary-card a {
+  color: var(--blue);
+  font-weight: 800;
+}
+
+.dashboard-main-grid {
+  display: grid;
+  grid-template-columns: minmax(340px, 0.9fr) minmax(0, 1.25fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.dashboard-bottom-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.dashboard-panel,
+.asset-form,
+.inventory-panel {
+  padding: 20px;
+}
+
+.toolbar,
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.toolbar h2,
+.panel-heading h2 {
+  color: var(--navy);
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.chart-card-body {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.9fr) minmax(0, 1fr);
+  gap: 22px;
+}
+
+.donut-chart {
+  width: min(235px, 100%);
+  aspect-ratio: 1;
+  border: 24px solid #ffffff;
+  box-shadow: inset 0 0 0 1px var(--line), var(--shadow-soft);
+}
+
+.chart-legend div {
+  border-bottom: 1px solid #eef2f7;
+}
+
+.table-wrap {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #ffffff;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  min-width: 980px;
+}
+
+.compact-table table {
+  min-width: 720px;
+}
+
+th,
+td {
+  border-bottom: 1px solid #eef2f7;
+  padding: 14px 15px;
+  color: #1f2937;
+  overflow-wrap: anywhere;
+}
+
+th {
+  background: #f8fafc;
+  color: #475467;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+body.rtl th,
+body.rtl td {
+  text-align: right;
+}
+
+body:not(.rtl) th,
+body:not(.rtl) td {
+  text-align: left;
+}
+
+tr:hover td {
+  background: #fbfdff;
+}
+
+input,
+select,
+textarea {
+  border: 1px solid #d7dee9;
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--text);
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 0;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(15, 108, 189, 0.13);
+}
+
+label span,
+label {
+  color: #344054;
+  font-weight: 700;
+}
+
+.primary-btn,
+.secondary-btn,
+.ghost-btn,
+.action-btn {
+  border-radius: 10px;
+  font-weight: 800;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, var(--blue), var(--blue-2));
+  color: #ffffff;
+  box-shadow: 0 12px 22px rgba(15, 108, 189, 0.22);
+}
+
+.secondary-btn {
+  border: 1px solid rgba(15, 108, 189, 0.2);
+  background: var(--blue-soft);
+  color: var(--blue-2);
+}
+
+.ghost-btn {
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: #344054;
+}
+
+.action-btn {
+  background: var(--blue-soft);
+  color: var(--blue-2);
+}
+
+.action-btn.delete {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.actions,
+.form-actions {
+  flex-wrap: wrap;
+}
+
+.status-pill,
+.warning-badge,
+.notification-badge {
+  border-radius: 999px;
+  font-weight: 900;
+}
+
+.status-active,
+.status-assigned,
+.status-available,
+.status-resolved {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.status-maintenance,
+.status-in-progress,
+.status-waiting-for-user,
+.status-waiting-for-parts {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.status-retired,
+.status-closed,
+.status-discontinued {
+  background: #f2f4f7;
+  color: #667085;
+}
+
+.status-in-storage,
+.status-new,
+.status-reserved {
+  background: var(--blue-soft);
+  color: var(--blue-2);
+}
+
+.warning-badge,
+.low-stock-row .warning-badge {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.login-page {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(15, 108, 189, 0.16), transparent 28rem),
+    linear-gradient(135deg, #f8fafc, #eef4fb);
+}
+
+.login-card {
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow);
+}
+
+.dashboard-footer {
+  color: var(--muted);
+}
+
+@media (max-width: 1180px) {
+  .dashboard-shell,
+  body.rtl .dashboard-shell,
+  body:not(.rtl) .dashboard-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar,
+  body.rtl .sidebar,
+  body:not(.rtl) .sidebar,
+  .app-shell,
+  body.rtl .app-shell,
+  body:not(.rtl) .app-shell {
+    grid-column: 1;
+    width: 100%;
+  }
+
+  .sidebar {
+    position: relative;
+    min-height: auto;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .sidebar-nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .dashboard-main-grid,
+  .dashboard-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    position: relative;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-page {
+    padding: 16px;
+  }
+
+  .topbar {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 14px 16px;
+  }
+
+  .topbar-actions,
+  .topbar-actions > *,
+  .language-switcher,
+  .company-switcher,
+  #logoutBtn,
+  #quickExportBtn {
+    width: 100%;
+  }
+
+  .sidebar {
+    padding: 18px 14px;
+  }
+
+  .brand-block,
+  body.rtl .brand-block {
+    grid-template-columns: 48px minmax(0, 1fr);
+    text-align: start;
+  }
+
+  .logo-mark {
+    width: 48px;
+    height: 48px;
+  }
+
+  .sidebar-nav,
+  .summary-grid,
+  .executive-summary,
+  .chart-card-body {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar-nav button,
+  body.rtl .sidebar-nav button {
+    min-height: 48px;
+    padding: 10px 42px 10px 12px;
+    text-align: start;
+  }
+
+  .sidebar-nav button::before,
+  body.rtl .sidebar-nav button::before {
+    inset-inline-start: auto;
+    inset-inline-end: 12px;
+  }
+
+  .summary-card,
+  .dashboard-panel,
+  .asset-form,
+  .inventory-panel {
+    padding: 16px;
+  }
+
+  .toolbar,
+  .panel-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .form-actions,
+  .actions {
+    flex-direction: column;
+  }
+
+  .form-actions button,
+  .actions .action-btn,
+  .primary-btn,
+  .secondary-btn,
+  .ghost-btn {
+    width: 100%;
+  }
+
+  th,
+  td {
+    padding: 11px 10px;
+  }
+}
+
+</style>
+</head>
+<body>
+  <section id="loginPage" class="login-page">
+    <form id="loginForm" class="login-card">
+      <div class="brand-block login-brand">
+        <div class="logo-mark">AG</div>
+        <div>
+          <strong>Amjaad Asset & Inventory Management</strong>
+          <span>Secure access portal</span>
+        </div>
+      </div>
+      <div>
+        <p class="section-label">Login</p>
+        <h1>Welcome back</h1>
+      </div>
+      <label>Username<input id="loginUsername" type="text" autocomplete="username" required></label>
+      <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required></label>
+      <p id="loginError" class="form-error hidden">Invalid username or password.</p>
+      <button class="primary-btn" type="submit">Login</button>
+      <div class="public-links">
+        <button type="button" class="ghost-btn" data-public-page="submitRequestPage">Submit Request</button>
+        <button type="button" class="ghost-btn" data-public-page="trackRequestPage">Track Request</button>
+      </div>
+    </form>
+  </section>
+
+  <div class="dashboard-shell">
+    <aside class="sidebar">
+      <div class="brand-block">
+        <div class="logo-mark">AG</div>
+        <div>
+          <strong>AMJAAD GROUP</strong>
+          <span>IT Asset Management</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Primary navigation">
+        <button class="active" type="button" data-page="dashboardPage">Dashboard</button>
+        <button type="button" data-page="assetsPage">Assets</button>
+        <button type="button" data-page="stockPage">Stock / Inventory</button>
+        <button type="button" data-page="maintenancePage">Maintenance</button>
+        <button type="button" data-page="suppliersPage">Suppliers</button>
+        <button type="button" data-page="serviceDeskPage">Service Desk</button>
+        <button type="button" data-page="usersPage">Users</button>
+        <button type="button" data-page="reportsPage">Reports</button>
+        <button type="button" data-page="settingsPage">Settings</button>
+      </nav>
+
+      <div class="sidebar-card">
+        <p>Portfolio View</p>
+        <strong>Corporate IT</strong>
+        <span>Live asset, stock, issue, supplier, and maintenance tracking.</span>
+      </div>
+    </aside>
+
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="topbar-title">
+          <p class="eyebrow">AMJAAD GROUP</p>
+          <h1 id="pageTitle">IT Asset Management System</h1>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn notification-btn" type="button" aria-label="Notifications">🔔<span>6</span></button>
+          <label class="language-switcher">
+            <span>Language</span>
+            <select id="languageSelect" aria-label="Language">
+              <option value="ar">العربية</option>
+              <option value="en">English</option>
+            </select>
+          </label>
+          <div class="company-switcher fixed-company" aria-label="Company">
+            <span>Company</span>
+            <strong id="topCompanySelect">AMJAAD GROUP</strong>
+          </div>
+          <div id="userProfile" class="user-profile">
+            <div class="user-avatar">AG</div>
+            <strong id="currentUserName">Admin</strong>
+            <small id="currentUserRole">Admin</small>
+          </div>
+          <button id="logoutBtn" class="ghost-btn" type="button">Logout</button>
+          <button id="quickExportBtn" class="secondary-btn" type="button">Export Current View</button>
+        </div>
+      </header>
+
+      <section id="dashboardPage" class="app-page">
+        <section class="welcome-panel">
+          <div class="amjaad-banner-copy">
+            <span class="banner-kicker">AMJAAD GROUP</span>
+            <h2>IT Asset Management System</h2>
+            <p>إدارة الأصول التقنية بوضوح وسهولة</p>
+            <small>Premium corporate command center for assets, inventory, maintenance, and IT service operations.</small>
+          </div>
+          <div class="amjaad-banner-mark" aria-hidden="true">
+            <span>AG</span>
+          </div>
+        </section>
+
+        <section class="summary-grid executive-summary">
+          <article class="summary-card">
+            <span class="card-icon">🖥</span>
+            <p>Total Assets</p>
+            <strong id="dashboardTotalAssets">0</strong>
+            <a href="#assetsPage" data-page-link="assetsPage">View All</a>
+          </article>
+          <article class="summary-card">
+            <span class="card-icon">🖥</span>
+            <p>Unassigned Assets</p>
+            <strong id="dashboardUnassignedAssets">0</strong>
+            <a href="#assetsPage" data-page-link="assetsPage">View All</a>
+          </article>
+          <article class="summary-card">
+            <span class="card-icon">🔧</span>
+            <p>Under Maintenance</p>
+            <strong id="itemsUnderMaintenance">0</strong>
+            <a href="#maintenancePage" data-page-link="maintenancePage">View All</a>
+          </article>
+          <article class="summary-card">
+            <span class="card-icon">🎧</span>
+            <p>Open Support Tickets</p>
+            <strong id="dashboardOpenTickets">0</strong>
+            <a href="#serviceDeskPage" data-page-link="serviceDeskPage">View All</a>
+          </article>
+        </section>
+
+        <section class="dashboard-main-grid">
+          <section class="panel dashboard-panel chart-panel">
+            <div class="toolbar">
+              <div>
+                <h2>Assets by Status</h2>
+                <p class="section-label">Assets by Status</p>
+              </div>
+            </div>
+            <div class="chart-card-body">
+              <div id="assetStatusDonut" class="donut-chart"></div>
+              <div id="assetStatusLegend" class="chart-legend"></div>
+            </div>
+          </section>
+
+          <section class="panel dashboard-panel recent-panel">
+            <div class="toolbar">
+              <a href="#assetsPage" data-page-link="assetsPage">View All</a>
+              <div>
+                <h2>Recent Assets</h2>
+                <p class="section-label">Recent Assets</p>
+              </div>
+            </div>
+            <div class="table-wrap compact-table">
+              <table>
+                <thead><tr><th>Asset</th><th>Type</th><th>User</th><th>Company</th><th>Date Added</th></tr></thead>
+                <tbody id="dashboardRecentAssets"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section class="dashboard-bottom-grid">
+          <section class="panel dashboard-panel">
+            <div class="toolbar">
+              <a href="#serviceDeskPage" data-page-link="serviceDeskPage">View All</a>
+              <div>
+                <h2>Recent Support Tickets</h2>
+                <p class="section-label">Recent Support Tickets</p>
+              </div>
+            </div>
+            <div class="table-wrap compact-table">
+              <table>
+                <thead><tr><th>Ticket #</th><th>Subject</th><th>User</th><th>Status</th><th>Created Date</th></tr></thead>
+                <tbody id="dashboardTickets"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel dashboard-panel">
+            <div class="toolbar">
+              <a href="#stockPage" data-page-link="stockPage">View All</a>
+              <div>
+                <h2>Low Stock Items</h2>
+                <p class="section-label">Low Stock Items</p>
+              </div>
+            </div>
+            <div class="table-wrap compact-table">
+              <table>
+                <thead><tr><th>Item</th><th>Min Level</th><th>Available Qty</th><th>Status</th></tr></thead>
+                <tbody id="dashboardLowStockTable"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <footer class="dashboard-footer">
+          <span>All rights reserved © 2026 IT Asset & Inventory Management System</span>
+          <span>System Version 1.0.0</span>
+        </footer>
+
+        <div class="hidden">
+          <span id="totalAssets">0</span>
+          <span id="activeAssets">0</span>
+          <span id="maintenanceAssets">0</span>
+          <span id="totalStockItems">0</span>
+          <span id="lowStockItems">0</span>
+          <span id="itemsIssuedToday">0</span>
+          <span id="ramAvailable">0</span>
+          <span id="ssdAvailable">0</span>
+          <span id="cablesAvailable">0</span>
+          <div id="lowStockList"></div>
+        </div>
+      </section>
+
+      <section id="assetsPage" class="app-page hidden">
+        <section class="layout-grid">
+          <form id="assetForm" class="panel asset-form">
+            <div class="panel-heading">
+              <div>
+                <p class="section-label">Asset Details</p>
+                <h2 id="formTitle">Add IT asset</h2>
+              </div>
+              <button type="button" id="cancelEditBtn" class="ghost-btn hidden">Cancel edit</button>
+            </div>
+
+            <label>Asset name<input id="assetName" type="text" placeholder="MacBook Pro 14" required></label>
+            <label>Asset tag<input id="assetTag" type="text" placeholder="IT-1024" required></label>
+
+            <div class="two-col">
+              <label>
+                Device Type
+                <select id="assetCategory" required>
+                  <option value="">Choose category</option>
+                  <option>Laptop</option><option>Desktop</option><option>Monitor</option><option>Phone</option><option>Tablet</option><option>Network</option><option>Peripheral</option><option>Software</option><option>Other</option>
+                </select>
+              </label>
+              <label>Brand<input id="assetBrand" type="text" placeholder="Apple"></label>
+            </div>
+
+            <div class="two-col">
+              <label>Model<input id="assetModel" type="text" placeholder="A2442"></label>
+              <label>Serial Number<input id="assetSerial" type="text" placeholder="C02ABC123"></label>
+            </div>
+
+            <div class="two-col">
+              <label>Assigned Employee<input id="assetEmployee" type="text" placeholder="Employee name"></label>
+              <label>Employee ID<input id="assetEmployeeId" type="text" placeholder="EMP-001"></label>
+            </div>
+
+            <div class="two-col">
+              <label>Company<select id="assetCompany"></select></label>
+              <label>Department<input id="assetDepartment" type="text" placeholder="IT"></label>
+            </div>
+
+            <div class="two-col">
+              <label>Location<input id="assetLocation" type="text" placeholder="Head Office"></label>
+              <label>Purchase date<input id="purchaseDate" type="date"></label>
+            </div>
+
+            <div class="two-col">
+              <label>Delivery Date<input id="deliveryDate" type="date"></label>
+              <label>
+                Status
+                <select id="assetStatus" required>
+                  <option>Active</option><option>Assigned</option><option>In Storage</option><option>Maintenance</option><option>Retired</option>
+                </select>
+              </label>
+            </div>
+
+            <label>Notes<textarea id="assetNotes" rows="3" placeholder="Warranty, location, or other context"></textarea></label>
+            <button class="primary-btn" type="submit" id="submitBtn">Add asset</button>
+          </form>
+
+          <section class="panel inventory-panel">
+            <div class="toolbar">
+              <div>
+                <p class="section-label">Inventory</p>
+                <h2>Assets</h2>
+              </div>
+              <button id="exportBtn" class="secondary-btn" type="button">Export CSV</button>
+            </div>
+            <div class="filters">
+              <label class="search-field"><span>Search</span><input id="searchInput" type="search" placeholder="Search name, tag, employee, company, category..."></label>
+              <label>Company<select id="assetCompanyFilter"></select></label>
+              <label>Status<select id="statusFilter"><option value="All">All statuses</option><option>Active</option><option>Assigned</option><option>In Storage</option><option>Maintenance</option><option>Retired</option></select></label>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Asset</th><th>Tag</th><th>Type</th><th>Brand / Model</th><th>Employee Name</th><th>Company</th><th>Status</th><th>Purchased</th><th>Delivery Date</th><th>Actions</th></tr></thead>
+                <tbody id="assetTable"></tbody>
+              </table>
+            </div>
+            <div id="emptyState" class="empty-state hidden"><h3>No assets found</h3><p>Add your first IT asset or adjust the current search and filter.</p></div>
+          </section>
+        </section>
+      </section>
+
+      <section id="stockPage" class="app-page hidden">
+        <section class="layout-grid stock-layout">
+          <form id="stockForm" class="panel asset-form">
+            <div class="panel-heading">
+              <div><p class="section-label">Stock Details</p><h2 id="stockFormTitle">Add stock item</h2></div>
+              <button type="button" id="cancelStockEditBtn" class="ghost-btn hidden">Cancel edit</button>
+            </div>
+
+            <div class="two-col">
+              <label>Item Code<input id="stockItemCode" type="text" placeholder="RAM-016" required></label>
+              <label>Item Name<input id="stockItemName" type="text" placeholder="RAM 16GB" required></label>
+            </div>
+            <div class="two-col">
+              <label>Category<select id="stockCategory" required></select></label>
+              <label>Brand<input id="stockBrand" type="text" placeholder="Kingston"></label>
+            </div>
+            <div class="two-col">
+              <label>Model<input id="stockModel" type="text" placeholder="DDR4-3200"></label>
+              <label>Store Location<input id="stockLocation" type="text" placeholder="Main IT Store"></label>
+            </div>
+            <label>Specification<input id="stockSpecification" type="text" placeholder="16GB DDR4 SODIMM"></label>
+            <div class="two-col">
+              <label>Quantity<input id="stockQuantity" type="number" min="0" step="1" value="0" required></label>
+              <label>Minimum Stock Level<input id="stockMinLevel" type="number" min="0" step="1" value="0" required></label>
+            </div>
+            <div class="two-col">
+              <label>Supplier<input id="stockSupplier" type="text" placeholder="Amjaad Technology Supplier"></label>
+              <label>Purchase Date<input id="stockPurchaseDate" type="date"></label>
+            </div>
+            <div class="two-col">
+              <label>Purchase Cost (OMR)<input id="stockPurchaseCost" type="number" min="0" step="0.001" placeholder="0.000"></label>
+              <label>Invoice Number<input id="stockInvoiceNumber" type="text" placeholder="INV-2026-001"></label>
+            </div>
+            <div class="two-col">
+              <label>Warranty Expiry Date<input id="stockWarrantyExpiry" type="date"></label>
+              <label>Status<select id="stockStatus" required><option>Available</option><option>Reserved</option><option>Discontinued</option></select></label>
+            </div>
+            <label>Notes<textarea id="stockNotes" rows="3" placeholder="Supplier, warranty, reorder reference, or other notes"></textarea></label>
+            <button class="primary-btn" type="submit" id="stockSubmitBtn">Add stock item</button>
+          </form>
+
+          <section class="panel inventory-panel">
+            <div class="toolbar">
+              <div><p class="section-label">Inventory</p><h2>Items</h2></div>
+              <button id="exportStockBtn" class="secondary-btn" type="button">Export Stock CSV</button>
+            </div>
+            <div class="filters stock-filters">
+              <label class="search-field"><span>Search</span><input id="stockSearchInput" type="search" placeholder="Search code, item, brand, supplier..."></label>
+              <label>Category<select id="stockCategoryFilter"></select></label>
+              <label>Stock Level<select id="lowStockFilter"><option value="All">All stock</option><option value="Low">Low stock only</option></select></label>
+            </div>
+            <div class="table-wrap">
+              <table class="stock-table">
+                <thead><tr><th>Item</th><th>Category</th><th>Brand / Model</th><th>Qty</th><th>Min</th><th>Supplier</th><th>Purchase</th><th>Warranty</th><th>Location</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="stockTable"></tbody>
+              </table>
+            </div>
+            <div id="stockEmptyState" class="empty-state hidden"><h3>No stock items found</h3><p>Add an item or adjust the current search and filters.</p></div>
+          </section>
+        </section>
+      </section>
+
+      <section id="maintenancePage" class="app-page hidden">
+        <section class="layout-grid maintenance-layout">
+          <form id="maintenanceForm" class="panel asset-form">
+            <div class="panel-heading"><div><p class="section-label">Maintenance</p><h2>Add maintenance record</h2></div></div>
+            <label>Asset<select id="maintenanceAsset" required></select></label>
+            <div class="two-col">
+              <label>Date<input id="maintenanceDate" type="date" required></label>
+              <label>Technician<input id="maintenanceTechnician" type="text" placeholder="Al Motasim"></label>
+            </div>
+            <div class="used-items-block">
+              <div class="toolbar compact-toolbar"><div><p class="section-label">Stock Used</p><h2>Parts and accessories</h2></div><button id="addUsedItemBtn" class="ghost-btn" type="button">Add item</button></div>
+              <div id="usedItemsList" class="used-items-list"></div>
+            </div>
+            <label>Notes<textarea id="maintenanceNotes" rows="3" placeholder="Repair notes, diagnosis, or follow-up action"></textarea></label>
+            <button class="primary-btn" type="submit">Save maintenance and update stock</button>
+          </form>
+          <section class="panel inventory-panel">
+            <div class="toolbar"><div><p class="section-label">Maintenance History</p><h2>Records</h2></div><button id="exportMaintenanceBtn" class="secondary-btn" type="button">Export CSV</button></div>
+            <div class="table-wrap"><table><thead><tr><th>Date</th><th>Asset</th><th>Technician</th><th>Stock Used</th><th>Notes</th></tr></thead><tbody id="maintenanceTable"></tbody></table></div>
+            <div id="maintenanceEmptyState" class="empty-state hidden"><h3>No maintenance records yet</h3><p>Add a record to automatically reduce selected stock quantities.</p></div>
+          </section>
+        </section>
+        <section class="panel inventory-panel related-panel">
+          <div class="toolbar"><div><p class="section-label">Issue History</p><h2>Issued stock records</h2></div><button id="maintenanceIssueExportBtn" class="secondary-btn" type="button">Export Issue History CSV</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Date</th><th>Item Code</th><th>Item Name</th><th>Quantity Issued</th><th>Issued To</th><th>Department</th><th>Purpose / Reason</th><th>Notes</th></tr></thead><tbody id="maintenanceIssueTable"></tbody></table></div>
+        </section>
+      </section>
+
+      <section id="issueHistoryPage" class="app-page hidden">
+        <section class="panel inventory-panel">
+          <div class="toolbar"><div><p class="section-label">Issue History</p><h2>Issued stock records</h2></div><button id="exportIssueHistoryBtn" class="secondary-btn" type="button">Export CSV</button></div>
+          <div class="filters">
+            <label class="search-field"><span>Search</span><input id="issueSearchInput" type="search" placeholder="Search item, person, department, purpose..."></label>
+            <label>Department<input id="issueDepartmentFilter" type="search" placeholder="All departments"></label>
+          </div>
+          <div class="table-wrap"><table><thead><tr><th>Date</th><th>Item Code</th><th>Item Name</th><th>Quantity Issued</th><th>Issued To</th><th>Department</th><th>Purpose / Reason</th><th>Notes</th></tr></thead><tbody id="issueHistoryTable"></tbody></table></div>
+          <div id="issueHistoryEmptyState" class="empty-state hidden"><h3>No issue records found</h3><p>Issue stock from the Inventory page to create history.</p></div>
+        </section>
+      </section>
+
+      <section id="suppliersPage" class="app-page hidden">
+        <section class="layout-grid">
+          <form id="supplierForm" class="panel asset-form">
+            <div class="panel-heading"><div><p class="section-label">Supplier Details</p><h2 id="supplierFormTitle">Add supplier</h2></div><button type="button" id="cancelSupplierEditBtn" class="ghost-btn hidden">Cancel edit</button></div>
+            <label>Supplier Name<input id="supplierName" type="text" required placeholder="Technology Supplier LLC"></label>
+            <label>Contact Person<input id="supplierContact" type="text" placeholder="Procurement Manager"></label>
+            <div class="two-col">
+              <label>Phone Number<input id="supplierPhone" type="tel" placeholder="+971..."></label>
+              <label>Email<input id="supplierEmail" type="email" placeholder="supplier@example.com"></label>
+            </div>
+            <label>Address<input id="supplierAddress" type="text" placeholder="Dubai, UAE"></label>
+            <label>Items Supplied<input id="supplierItems" type="text" placeholder="RAM, SSD, Chargers"></label>
+            <label>Notes<textarea id="supplierNotes" rows="3"></textarea></label>
+            <button class="primary-btn" type="submit" id="supplierSubmitBtn">Add supplier</button>
+          </form>
+          <section class="panel inventory-panel">
+            <div class="toolbar"><div><p class="section-label">Suppliers</p><h2>Vendor directory</h2></div></div>
+            <div class="filters"><label class="search-field"><span>Search</span><input id="supplierSearchInput" type="search" placeholder="Search supplier, contact, items..."></label></div>
+            <div class="table-wrap"><table><thead><tr><th>Supplier</th><th>Contact</th><th>Phone</th><th>Email</th><th>Items Supplied</th><th>Actions</th></tr></thead><tbody id="supplierTable"></tbody></table></div>
+            <div id="supplierEmptyState" class="empty-state hidden"><h3>No suppliers found</h3><p>Add suppliers to build a procurement directory.</p></div>
+          </section>
+        </section>
+      </section>
+
+      <section id="auditLogPage" class="app-page hidden">
+        <section class="panel inventory-panel">
+          <div class="toolbar"><div><p class="section-label">Audit Log</p><h2>System activity</h2></div><button id="exportAuditBtn" class="secondary-btn" type="button">Export CSV</button></div>
+          <div class="filters"><label class="search-field"><span>Search</span><input id="auditSearchInput" type="search" placeholder="Search user, action, details..."></label></div>
+          <div class="table-wrap"><table><thead><tr><th>Date and Time</th><th>User / Technician</th><th>Action Type</th><th>Details</th></tr></thead><tbody id="auditTable"></tbody></table></div>
+          <div id="auditEmptyState" class="empty-state hidden"><h3>No audit records yet</h3><p>Important actions will appear here automatically.</p></div>
+        </section>
+      </section>
+
+      <section id="submitRequestPage" class="app-page hidden">
+        <section class="layout-grid">
+          <form id="requestForm" class="panel asset-form">
+            <div class="panel-heading"><div><p class="section-label">IT Helpdesk & Service Desk</p><h2>Submit IT Request</h2></div></div>
+            <p class="hero-copy">Employee Information</p>
+            <label>Employee Name<input id="requesterName" type="text" required placeholder="Employee name"></label>
+            <label>Employee ID<input id="requestEmployeeId" type="text" required placeholder="EMP-001"></label>
+            <div class="two-col">
+              <label>Department<input id="requestDepartment" type="text" placeholder="Department"></label>
+              <label>Site / Location<input id="requestSite" type="text" placeholder="Head Office"></label>
+            </div>
+            <div class="two-col">
+              <label>Mobile Number<input id="requestMobile" type="tel" required placeholder="+971..."></label>
+              <label>Email (optional)<input id="requestEmail" type="email" placeholder="employee@example.com"></label>
+            </div>
+            <p class="hero-copy">Request Information</p>
+            <label>Category<select id="requestCategory" required></select></label>
+            <label>Request Type<input id="requestType" type="text" required placeholder="Request type"></label>
+            <label>Priority<select id="requestPriority"><option>Low</option><option>Medium</option><option>High</option><option>Urgent</option></select></label>
+            <label>Subject<input id="requestSubject" type="text" required placeholder="Short request subject"></label>
+            <label>Description<textarea id="requestDetails" rows="4" required placeholder="Describe the request"></textarea></label>
+            <label>Upload Image / PDF<input id="requestAttachments" type="file" accept="image/*,.pdf" multiple></label>
+            <div id="requestSuccess" class="success-panel hidden"></div>
+          </form>
+
+          <section class="panel inventory-panel">
+            <div class="toolbar"><div><p class="section-label">Public Request</p><h2>Submission Guide</h2></div></div>
+            <div class="empty-state compact-empty"><h3>Submit without login</h3><p>Employees can create IT requests and track them using the generated request number.</p></div>
+            <div id="requestEmptyState" class="empty-state hidden"><h3>No requests found</h3><p>Submitted requests will appear here.</p></div>
+          </section>
+        </section>
+      </section>
+
+      <section id="trackRequestPage" class="app-page hidden">
+        <section class="panel inventory-panel">
+          <div class="toolbar"><div><p class="section-label">Track Request</p><h2>Request lookup</h2></div></div>
+          <div class="filters"><label class="search-field"><span>Request Number</span><input id="trackRequestSearch" type="search" placeholder="REQ-2026-00001"></label></div>
+          <div class="table-wrap"><table><thead><tr><th>Request Number</th><th>Request Status</th><th>Priority</th><th>Assigned IT Staff</th><th>Last Update</th><th>Comments</th><th>Attachments</th><th>Completion Date</th></tr></thead><tbody id="trackRequestTable"></tbody></table></div>
+        </section>
+      </section>
+
+      <section id="serviceDeskPage" class="app-page hidden">
+        <section class="summary-grid executive-summary">
+          <article class="summary-card"><span class="card-icon">N</span><p>New Tickets</p><strong id="newTickets">0</strong></article>
+          <article class="summary-card"><span class="card-icon">O</span><p>Open Tickets</p><strong id="openTickets">0</strong></article>
+          <article class="summary-card warning"><span class="card-icon">H</span><p>High Priority Tickets</p><strong id="highPriorityTickets">0</strong></article>
+          <article class="summary-card"><span class="card-icon">W</span><p>Waiting for User</p><strong id="waitingUserTickets">0</strong></article>
+          <article class="summary-card"><span class="card-icon">R</span><p>Resolved Today</p><strong id="resolvedTodayTickets">0</strong></article>
+        </section>
+        <section class="panel inventory-panel">
+          <div class="toolbar">
+            <div><p class="section-label">IT Helpdesk & Service Desk</p><h2>Tickets</h2></div>
+            <div class="report-actions">
+              <button class="ghost-btn" type="button" data-public-page="submitRequestPage">Submit IT Request</button>
+              <button class="ghost-btn" type="button" data-public-page="trackRequestPage">Track Request</button>
+              <span id="ticketBadge" class="notification-badge">0 New</span>
+            </div>
+          </div>
+          <div class="filters stock-filters">
+            <label class="search-field"><span>Search</span><input id="ticketSearchInput" type="search" placeholder="Search tickets..."></label>
+            <label>Status<select id="ticketStatusFilter"><option value="All">All statuses</option></select></label>
+            <label>Department<input id="ticketDepartmentFilter" type="search" placeholder="All departments"></label>
+            <label>Site<input id="ticketSiteFilter" type="search" placeholder="All sites"></label>
+            <label>Priority<select id="ticketPriorityFilter"><option value="All">All priorities</option><option>Low</option><option>Medium</option><option>High</option><option>Urgent</option></select></label>
+            <label>Category<select id="ticketCategoryFilter"><option value="All">All categories</option></select></label>
+          </div>
+          <div class="table-wrap"><table class="stock-table"><thead><tr><th>Request Number</th><th>Employee</th><th>Department</th><th>Site</th><th>Category</th><th>Priority</th><th>Status</th><th>Assigned IT Staff</th><th>Last Update</th><th>Actions</th></tr></thead><tbody id="ticketTable"></tbody></table></div>
+          <div id="ticketEmptyState" class="empty-state hidden"><h3>No tickets found</h3><p>Submitted IT requests will appear here.</p></div>
+        </section>
+      </section>
+
+      <section id="usersPage" class="app-page hidden">
+        <section class="layout-grid">
+          <form id="userForm" class="panel asset-form">
+            <div class="panel-heading"><div><p class="section-label">User Management</p><h2 id="userFormTitle">Add User</h2></div><button type="button" id="cancelUserEditBtn" class="ghost-btn hidden">Cancel edit</button></div>
+            <label>Full Name<input id="userFullName" type="text" required placeholder="User full name"></label>
+            <div class="two-col">
+              <label>Email<input id="userEmail" type="email" required placeholder="user@example.com"></label>
+              <label>Role<select id="userRole"><option>Admin</option><option>Technician</option><option>Viewer</option></select></label>
+            </div>
+            <div class="two-col">
+              <label>Company<select id="userCompany"></select></label>
+              <label>Department<input id="userDepartment" type="text" placeholder="Department"></label>
+            </div>
+          </form>
+
+          <section class="panel inventory-panel">
+            <div class="toolbar"><div><p class="section-label">Users</p><h2>System users</h2></div></div>
+            <div class="table-wrap"><table><thead><tr><th>Username</th><th>Password</th><th>Company</th><th>Role</th><th>Permissions</th><th>Actions</th></tr></thead><tbody id="userTable"></tbody></table></div>
+            <div id="userEmptyState" class="empty-state hidden"><h3>No users found</h3><p>Add users to manage system access.</p></div>
+          </section>
+        </section>
+      </section>
+
+      <section id="reportsPage" class="app-page hidden">
+        <section class="panel dashboard-panel">
+          <div class="toolbar"><div><p class="section-label">Reports</p><h2>Export center</h2></div></div>
+          <div class="filters stock-filters">
+            <label class="search-field"><span>Employee</span><input id="reportEmployeeFilter" type="search" placeholder="Employee name"></label>
+            <label>Company<select id="reportCompanyFilter"></select></label>
+            <label>Asset Type<select id="reportAssetTypeFilter"></select></label>
+            <label>Status<select id="reportStatusFilter"><option value="All">All statuses</option><option>Active</option><option>Assigned</option><option>In Storage</option><option>Maintenance</option><option>Retired</option></select></label>
+          </div>
+          <div class="report-actions">
+            <button id="reportExportAssetsBtn" class="secondary-btn" type="button">Export Assets CSV</button>
+            <button id="reportExportFilteredAssetsBtn" class="secondary-btn" type="button">Export Filtered Asset Report</button>
+            <button id="reportExportStockBtn" class="secondary-btn" type="button">Export Stock CSV</button>
+            <button id="reportExportMaintenanceBtn" class="secondary-btn" type="button">Export Maintenance CSV</button>
+            <button id="reportExportIssuesBtn" class="secondary-btn" type="button">Export Issue History CSV</button>
+            <button id="reportExportAuditBtn" class="secondary-btn" type="button">Export Audit Log CSV</button>
+          </div>
+        </section>
+      </section>
+
+      <section id="settingsPage" class="app-page hidden">
+        <section class="panel dashboard-panel">
+          <form id="settingsForm">
+            <div class="toolbar"><div><p class="section-label">Settings</p><h2>System settings</h2></div></div>
+            <div class="two-col">
+              <label>System Name<input id="settingsSystemName" type="text" value="Amjaad Asset & Inventory Management"></label>
+              <label>Default Language<select id="settingsDefaultLanguage"><option value="en">English</option><option value="ar">العربية</option></select></label>
+            </div>
+          </form>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div id="issueModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="issueModalTitle">
+    <form id="issueForm" class="modal-card">
+      <div class="modal-header">
+        <div>
+          <p class="section-label">Issue Item</p>
+          <h2 id="issueModalTitle">Issue stock item</h2>
+        </div>
+        <button id="closeIssueModalBtn" class="ghost-btn" type="button">Close</button>
+      </div>
+      <input id="issueStockId" type="hidden">
+      <div class="two-col">
+        <label>Item Name<input id="issueItemName" type="text" readonly></label>
+        <label>Available Quantity<input id="issueAvailableQuantity" type="number" readonly></label>
+      </div>
+      <div class="two-col">
+        <label>Quantity to Issue<input id="issueQuantity" type="number" min="1" step="1" value="1" required></label>
+        <label>Issue Date<input id="issueDate" type="date" required></label>
+      </div>
+      <div class="two-col">
+        <label>Issued To<input id="issueIssuedTo" type="text" placeholder="Shahad" required></label>
+        <label>Department<input id="issueDepartment" type="text" placeholder="Finance"></label>
+      </div>
+      <label>Purpose / Reason<input id="issuePurpose" type="text" placeholder="Laptop repair or workstation setup"></label>
+      <label>Notes<textarea id="issueNotes" rows="3"></textarea></label>
+      <button class="primary-btn" type="submit">Save issue and update stock</button>
+    </form>
+  </div>
+
+  <div id="qrModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">
+    <div class="modal-card qr-card">
+      <div class="modal-header">
+        <div><p class="section-label">Asset QR Code</p><h2 id="qrModalTitle">Generate QR Code</h2></div>
+        <button id="closeQrModalBtn" class="ghost-btn" type="button">Close</button>
+      </div>
+      <canvas id="qrCanvas" width="260" height="260" aria-label="Asset QR code"></canvas>
+      <pre id="qrPayload" class="qr-payload"></pre>
+      <div class="report-actions">
+        <button id="downloadQrBtn" class="secondary-btn" type="button">Download PNG</button>
+        <button id="printQrBtn" class="secondary-btn" type="button">Print QR Code</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="passwordModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="passwordModalTitle">
+    <form id="resetPasswordForm" class="modal-card">
+      <div class="modal-header">
+        <div><p class="section-label">Reset Password</p><h2 id="passwordModalTitle">Reset Password</h2></div>
+        <button id="closePasswordModalBtn" class="ghost-btn" type="button">Close</button>
+      </div>
+      <input id="passwordUserId" type="hidden">
+      <label>User<input id="passwordUserName" type="text" readonly></label>
+      <label>New Password<input id="newPassword" type="password" required placeholder="Enter new password"></label>
+    </form>
+  </div>
+
+  <script>
 const STORAGE_KEYS = {
   assets: "itAssetManager.assets",
   stock: "itAssetManager.stockItems",
@@ -881,36 +4973,19 @@ const defaultAdminUser = {
 
 const storage = {
   load(key, fallback) {
-    if (window.amjaadStorageService) {
-      return window.amjaadStorageService.loadArray(key, fallback);
+    const storedValue = localStorage.getItem(key);
+    if (!storedValue) return fallback;
+    try {
+      const parsedValue = JSON.parse(storedValue);
+      return Array.isArray(parsedValue) ? parsedValue : fallback;
+    } catch {
+      return fallback;
     }
-    return Array.isArray(fallback) ? [...fallback] : [];
   },
   save(key, value) {
-    if (window.amjaadStorageService) {
-      window.amjaadStorageService.saveArray(key, value);
-    }
+    localStorage.setItem(key, JSON.stringify(value));
   }
 };
-
-function loadStoredValue(key, fallback = null) {
-  if (window.amjaadStorageService) {
-    return window.amjaadStorageService.loadValue(key, fallback);
-  }
-  return fallback;
-}
-
-function saveStoredValue(key, value) {
-  if (window.amjaadStorageService) {
-    window.amjaadStorageService.saveValue(key, value);
-  }
-}
-
-function removeStoredValue(key) {
-  if (window.amjaadStorageService) {
-    window.amjaadStorageService.remove(key);
-  }
-}
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -922,42 +4997,6 @@ const quickExportBtn = $("#quickExportBtn");
 const loginPage = $("#loginPage");
 const appShell = $(".dashboard-shell");
 const publicPages = new Set(["submitRequestPage", "trackRequestPage"]);
-const PAGE_PATHS = {
-  dashboardPage: "/dashboard",
-  assetsPage: "/assets",
-  stockPage: "/stock",
-  maintenancePage: "/maintenance",
-  suppliersPage: "/suppliers",
-  serviceDeskPage: "/requests",
-  usersPage: "/users",
-  reportsPage: "/reports",
-  settingsPage: "/settings",
-  submitRequestPage: "/submit-request",
-  trackRequestPage: "/track-request",
-  issueHistoryPage: "/issue-history",
-  auditLogPage: "/audit-log"
-};
-const PATH_PAGES = Object.fromEntries(Object.entries(PAGE_PATHS).map(([page, path]) => [path, page]));
-Object.assign(PATH_PAGES, {
-  "/": "dashboardPage",
-  "/dashboardPage": "dashboardPage",
-  "/assetsPage": "assetsPage",
-  "/stockPage": "stockPage",
-  "/inventory": "stockPage",
-  "/maintenancePage": "maintenancePage",
-  "/suppliersPage": "suppliersPage",
-  "/serviceDeskPage": "serviceDeskPage",
-  "/service-desk": "serviceDeskPage",
-  "/tickets": "serviceDeskPage",
-  "/requests": "serviceDeskPage",
-  "/usersPage": "usersPage",
-  "/reportsPage": "reportsPage",
-  "/settingsPage": "settingsPage",
-  "/submitRequestPage": "submitRequestPage",
-  "/trackRequestPage": "trackRequestPage",
-  "/issueHistoryPage": "issueHistoryPage",
-  "/auditLogPage": "auditLogPage"
-});
 
 const assetForm = $("#assetForm");
 const handoverForm = $("#handoverForm");
@@ -974,7 +5013,7 @@ let issueHistory = storage.load(STORAGE_KEYS.issues, []);
 let suppliers = storage.load(STORAGE_KEYS.suppliers, []);
 let auditLog = storage.load(STORAGE_KEYS.audit, []);
 let requests = storage.load(STORAGE_KEYS.requests, []);
-let users = storage.load(STORAGE_KEYS.users, getDefaultUsers()).map(migrateUser);
+let users = getDefaultUsers();
 let editingId = null;
 let editingHandoverId = null;
 let editingStockId = null;
@@ -982,7 +5021,7 @@ let editingSupplierId = null;
 let editingUserId = null;
 let activePage = "dashboardPage";
 let currentQrAsset = null;
-let currentLanguage = loadStoredValue(STORAGE_KEYS.language, "ar") || "ar";
+let currentLanguage = localStorage.getItem(STORAGE_KEYS.language) || "ar";
 let loggedInUser = getLoggedInUser();
 let submitMode = "save";
 const trackedForms = new Set();
@@ -1009,7 +5048,7 @@ $$("[data-page-link]").forEach((link) => link.addEventListener("click", (event) 
 quickExportBtn.addEventListener("click", exportActiveView);
 $("#languageSelect").addEventListener("change", (event) => {
   currentLanguage = event.target.value;
-  saveStoredValue(STORAGE_KEYS.language, currentLanguage);
+  localStorage.setItem(STORAGE_KEYS.language, currentLanguage);
   applyLanguage();
   setupCategoryOptions();
   renderAll();
@@ -1022,12 +5061,6 @@ window.addEventListener("hashchange", () => {
   const requestedPage = getRequestedPage();
   if (requestedPage !== activePage) {
     showPage(requestedPage);
-  }
-});
-window.addEventListener("popstate", () => {
-  const requestedPage = getRequestedPage();
-  if (requestedPage !== activePage) {
-    showPage(requestedPage, { replace: true });
   }
 });
 
@@ -1184,9 +5217,9 @@ function setupDirtyTracking() {
 
 function setupRequestDraft() {
   const form = $("#requestForm");
-  const draft = loadStoredValue(STORAGE_KEYS.requestDraft, null);
+  const draft = localStorage.getItem(STORAGE_KEYS.requestDraft);
   if (draft && confirm(t("Restore unsaved draft?"))) {
-    const data = typeof draft === "string" ? JSON.parse(draft) : draft;
+    const data = JSON.parse(draft);
     Object.entries(data).forEach(([id, value]) => {
       const input = document.getElementById(id);
       if (input) input.value = value;
@@ -1194,7 +5227,7 @@ function setupRequestDraft() {
     addAudit("Draft restored", "Restored public request draft");
     showToast(t("Draft restored"));
   } else if (draft) {
-    removeStoredValue(STORAGE_KEYS.requestDraft);
+    localStorage.removeItem(STORAGE_KEYS.requestDraft);
     addAudit("Draft discarded", "Discarded public request draft");
   }
   form.addEventListener("input", () => {
@@ -1202,7 +5235,7 @@ function setupRequestDraft() {
     ["requesterName", "requestEmployeeId", "requestDepartment", "requestSite", "requestMobile", "requestEmail", "requestCategory", "requestType", "requestPriority", "requestSubject", "requestDetails"].forEach((id) => {
       data[id] = document.getElementById(id).value;
     });
-    saveStoredValue(STORAGE_KEYS.requestDraft, data);
+    localStorage.setItem(STORAGE_KEYS.requestDraft, JSON.stringify(data));
   });
 }
 
@@ -1498,15 +5531,10 @@ function setDefaultDates() {
   if ($("#handoverDate")) $("#handoverDate").value = today;
 }
 
-function showPage(pageId, options = {}) {
+function showPage(pageId) {
   if (!routeGuard(pageId)) return;
-  const targetPath = PAGE_PATHS[pageId] || "/dashboard";
-  if ((location.pathname !== targetPath || location.hash) && !options.skipHistory) {
-    if (options.replace) {
-      history.replaceState(null, "", targetPath);
-    } else {
-      history.pushState(null, "", targetPath);
-    }
+  if (location.hash !== `#${pageId}`) {
+    history.pushState(null, "", `#${pageId}`);
   }
   if (isLoggedIn()) {
     showAuthenticatedApp();
@@ -2311,7 +6339,7 @@ function saveRequestFromForm(event) {
   };
   requests.unshift(request);
   saveRequests();
-  removeStoredValue(STORAGE_KEYS.requestDraft);
+  localStorage.removeItem(STORAGE_KEYS.requestDraft);
   addAudit("Ticket Created", `Created ticket ${requestNumber} by ${request.requester}`);
   addAudit("Save new record", `Saved ticket ${requestNumber}`);
   markClean($("#requestForm"));
@@ -2416,13 +6444,13 @@ function handleRequestAction(event) {
 function resetRequestForm() {
   $("#requestForm").reset();
   $("#requestSuccess").classList.add("hidden");
-  removeStoredValue(STORAGE_KEYS.requestDraft);
+  localStorage.removeItem(STORAGE_KEYS.requestDraft);
 }
 
 function generateRequestNumber() {
   const year = new Date().getFullYear();
-  const currentCounter = readNumber(loadStoredValue(STORAGE_KEYS.ticketCounter, 0)) + 1;
-  saveStoredValue(STORAGE_KEYS.ticketCounter, currentCounter);
+  const currentCounter = readNumber(localStorage.getItem(STORAGE_KEYS.ticketCounter)) + 1;
+  localStorage.setItem(STORAGE_KEYS.ticketCounter, String(currentCounter));
   return `REQ-${year}-${String(currentCounter).padStart(5, "0")}`;
 }
 
@@ -2486,7 +6514,7 @@ function savePasswordReset(event) {
   event.preventDefault();
   const user = users.find((item) => item.id === $("#passwordUserId").value);
   if (user) {
-    users = users.map((item) => item.id === user.id ? { ...item, password: $("#newPassword").value || item.password || defaultAdminUser.password } : item);
+    users = [{ ...defaultAdminUser, password: $("#newPassword").value || defaultAdminUser.password }];
     saveUsers();
   }
   addAudit("Reset Password", `Reset password for ${user?.username || "Admin"}`);
@@ -2506,7 +6534,7 @@ function resetSettingsForm() {
 
 function getLoggedInUser() {
   try {
-    return loadStoredValue(STORAGE_KEYS.session, null);
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.session));
   } catch {
     return null;
   }
@@ -2533,9 +6561,7 @@ function initializeAuth() {
 function getRequestedPage() {
   const hashPage = location.hash.replace("#", "");
   if (hashPage === "handoverPage") return "dashboardPage";
-  if (document.getElementById(hashPage)?.classList.contains("app-page")) return hashPage;
-  const normalizedPath = location.pathname.replace(/\/+$/, "") || "/";
-  return PATH_PAGES[normalizedPath] || "dashboardPage";
+  return document.getElementById(hashPage)?.classList.contains("app-page") ? hashPage : "dashboardPage";
 }
 
 function showLogin() {
@@ -2560,7 +6586,7 @@ function handleLogin(event) {
   const password = $("#loginPassword").value;
   if (username === defaultAdminUser.username && password === defaultAdminUser.password) {
     const session = { username: "Admin", role: "Admin", loginAt: new Date().toISOString() };
-    saveStoredValue(STORAGE_KEYS.session, session);
+    localStorage.setItem(STORAGE_KEYS.session, JSON.stringify(session));
     $("#loginError").classList.add("hidden");
     $("#loginForm").reset();
     showAuthenticatedApp();
@@ -2571,7 +6597,7 @@ function handleLogin(event) {
 }
 
 function logout() {
-  removeStoredValue(STORAGE_KEYS.session);
+  localStorage.removeItem(STORAGE_KEYS.session);
   loggedInUser = null;
   activePage = "loginPage";
   history.replaceState(null, "", location.pathname);
@@ -2597,12 +6623,7 @@ function getDefaultUsers() {
 }
 
 function enforceDefaultAdminUser() {
-  if (!Array.isArray(users) || users.length === 0) {
-    users = getDefaultUsers();
-    saveUsers();
-    return;
-  }
-  users = users.map(migrateUser);
+  users = getDefaultUsers();
   saveUsers();
 }
 
@@ -2934,3 +6955,7 @@ function escapeHtml(value = "") {
   return String(value).replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[character]);
 }
 
+
+</script>
+</body>
+</html>
