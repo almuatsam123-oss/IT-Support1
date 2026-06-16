@@ -157,3 +157,34 @@ begin
     );
   end loop;
 end $$;
+
+insert into public.employees (id, payload)
+values (
+  'default-admin',
+  '{
+    "id": "default-admin",
+    "username": "Admin",
+    "password": "Amjaad@2026",
+    "fullName": "Admin",
+    "email": "",
+    "role": "Admin",
+    "company": "AMJAAD GROUP",
+    "department": "Administration",
+    "permissions": [
+      "Full access to all pages",
+      "Can manage assets",
+      "Can manage asset handover",
+      "Can manage stock / inventory",
+      "Can manage requests",
+      "Can manage maintenance",
+      "Can manage suppliers",
+      "Can manage audit log",
+      "Can manage reports",
+      "Can manage users",
+      "Can reset passwords"
+    ]
+  }'::jsonb
+)
+on conflict (id) do update set
+  payload = public.employees.payload || excluded.payload,
+  updated_at = now();

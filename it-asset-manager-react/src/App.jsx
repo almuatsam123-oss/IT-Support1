@@ -41,10 +41,25 @@ function loadLegacyApp() {
       return;
     }
 
+    let startupError = null;
     try {
       await initializeSupabaseStorageBridge();
+    } catch (error) {
+      startupError = error;
+      window.__AMJAAD_STARTUP_ERROR__ = error;
+      console.error("Unable to initialize Supabase storage", error);
+    }
+
+    try {
       await loadScript("/legacy-app.js", "amjaad-legacy-app");
       window.__AMJAAD_LEGACY_APP_LOADED__ = true;
+      if (startupError) {
+        const loginError = document.getElementById("loginError");
+        if (loginError) {
+          loginError.textContent = "Unable to connect to Supabase. Login is available, but data will not persist until production environment variables are fixed.";
+          loginError.classList.remove("hidden");
+        }
+      }
       resolve();
     } catch (error) {
       reject(error);
@@ -58,6 +73,11 @@ export default function App() {
   useEffect(() => {
     loadLegacyApp().catch((error) => {
       console.error("Unable to load AMJAAD app logic", error);
+      const loginError = document.getElementById("loginError");
+      if (loginError) {
+        loginError.textContent = "Unable to connect to Supabase. Please verify the production environment variables and try again.";
+        loginError.classList.remove("hidden");
+      }
     });
   }, []);
 

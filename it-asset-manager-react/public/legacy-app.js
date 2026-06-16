@@ -2581,6 +2581,7 @@ function handleLogin(event) {
     showPage("dashboardPage");
     return;
   }
+  $("#loginError").textContent = t("Invalid username or password.");
   $("#loginError").classList.remove("hidden");
 }
 
